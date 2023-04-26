@@ -157,20 +157,16 @@
         }
 
         // set up tiles
-        if($el.data('tile-layer-url')){
-          var attribution = $el.data('tile-layer-attribution') || ''
-          L.tileLayer('//'+$el.data('tile-layer-url'), {
-            attribution: attribution,
-            maxZoom: 18
-          }).addTo(map)
-        } else {
-          var mapboxUrl = 'https://api.mapbox.com/styles/v1/mapbox/'+window.MAPBOX_MAP_ID+'/tiles/{z}/{x}/{y}?access_token='+window.MAPBOX_ACCESS_TOKEN
-          L.tileLayer(mapboxUrl, {
-            attribution: 'Map data &copy; <a href="//openstreetmap.org">OpenStreetMap</a> contributors, <a href="//creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="//mapbox.com">Mapbox</a>',
-            maxZoom: 18
-          }).addTo(map);
-        }
-
+        var mapboxHostnameAndPath = $el.data('tile-layer-url') || 'api.mapbox.com/styles/v1/mapbox/'+window.MAPBOX_MAP_ID+'/tiles/{z}/{x}/{y}?access_token={accessToken}';
+        var attribution = $el.data('tile-layer-attribution') || 'Map data &copy; <a href="//openstreetmap.org">OpenStreetMap</a> contributors, <a href="//creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="//mapbox.com">Mapbox</a>';
+        L.tileLayer('//' + mapboxHostnameAndPath, {
+          // Attributes from https://docs.mapbox.com/help/troubleshooting/migrate-legacy-static-tiles-api/
+          attribution: attribution,
+          maxZoom: 18,
+          tileSize: 512,
+          zoomOffset: -1,
+          accessToken: window.MAPBOX_ACCESS_TOKEN
+        }).addTo(map);
 
         // everything below here is to set up editing, so if we're not editable,
         // we can just return early.
@@ -332,10 +328,33 @@
                     var tokenSeparators = [','];
                 }
 
+                if ($el.attr('data-allow-duplicate-tags')) {
+                    var allowDuplicateTags = JSON.parse($el.attr('data-allow-duplicate-tags'));
+                } else {
+                    var allowDuplicateTags = false;
+                }
+
+                if (allowDuplicateTags) {
+                    // To allow duplicate tags, we need to have a unique ID for each entry.
+                    // The easiest way to do this is appending the current Unix timestamp.
+                    // However, this causes the ID to change (the ID is what flask-admin receives later on).
+                    // We separate the date with a '#' and put a space at the end of the ID
+                    // (something the user can't do due to 'trim') to specially mark these entries.
+                    var createSearchChoice = function (term) {
+                        return {
+                            id: $.trim(term) + "#" + new Date().getTime() + " ",
+                            text: $.trim(term)
+                        };
+                    };
+                } else {
+                    var createSearchChoice = undefined;
+                }
+
                 var opts = {
                     width: 'resolve',
                     tags: tags,
                     tokenSeparators: tokenSeparators,
+                    createSearchChoice: createSearchChoice,
                     formatNoMatches: function() {
                         return 'Enter comma separated values';
                     }
@@ -493,8 +512,8 @@
                         // override to display text instead of ids on list view
                         var html = [];
                         // temporary patch to provide bs3 & bs4 compatibility
-                        var data = $.fn.editableutils.itemsByValue(value, $el.data('source'), 'id') +
-                            $.fn.editableutils.itemsByValue(value, $el.data('source'), 'value');
+                        var data = $.fn.editableutils.itemsByValue(value, $el.data('source'), 'id').concat(
+                            $.fn.editableutils.itemsByValue(value, $el.data('source'), 'value'));
 
                         if(data.length) {
                             $.each(data, function(i, v) { html.push($.fn.editableutils.escape(v.text)); });
