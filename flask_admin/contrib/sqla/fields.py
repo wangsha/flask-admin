@@ -31,7 +31,6 @@ from ..._types import T_SQLALCHEMY_MODEL
 from ..._types import T_VALIDATOR
 from ...model.form import InlineBaseFormAdmin
 from ._compat import _get_deprecated_session
-from ._compat import _warn_session_deprecation
 from ._types import T_SESSION_OR_DB
 from .tools import get_primary_key
 
@@ -75,11 +74,11 @@ class QuerySelectField(SelectFieldBase):
         validators: list[T_VALIDATOR] | tuple[T_VALIDATOR, ...] | None = None,
         query_factory: t.Any = None,
         get_pk: t.Any = None,
-        get_label: t.Any = None,
+        get_label: str | t.Callable[[t.Any], str] | None = None,
         allow_blank: bool = False,
         blank_text: str = "",
         **kwargs: t.Any,
-    ):
+    ) -> None:
         super().__init__(
             label,
             validators,  # type: ignore[arg-type]
@@ -93,7 +92,7 @@ class QuerySelectField(SelectFieldBase):
             self.get_pk = get_pk
 
         if get_label is None:
-            self.get_label = lambda x: x
+            self.get_label: t.Callable[[t.Any], str] = lambda x: x
         elif isinstance(get_label, string_types):
             self.get_label = operator.attrgetter(get_label)
         else:
@@ -278,7 +277,7 @@ class InlineHstoreList(InlineFieldList):
         """Combines each FormField key/value into a dictionary for storage"""
         _fake = type("_fake", (object,), {})
 
-        output = {}
+        output: dict[str | None, str | None] = {}
         for form_field in self.entries:
             if not self.should_delete(form_field):
                 fake_obj = _fake()
@@ -326,7 +325,7 @@ class InlineModelFormList(InlineFieldList):
             Inline view
         """
         self.form = form
-        self.session = _warn_session_deprecation(session)
+        self.session = session
         self.model = model
         self.prop = prop
         self.inline_view = inline_view
@@ -391,7 +390,7 @@ class InlineModelOneToOneField(InlineModelFormField):
         **kwargs: t.Any,
     ) -> None:
         self.form = form
-        self.session = _warn_session_deprecation(session)
+        self.session = session
         self.model = model
         self.prop = prop
         self.inline_view = inline_view

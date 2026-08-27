@@ -1,18 +1,28 @@
 import typing as t
 
+from flask import Flask
 from sqlalchemy import Column
 from sqlalchemy import ForeignKey
 from sqlalchemy import Integer
 from sqlalchemy import String
 
+from ... import Admin
+from ..conftest import skip_or_return_session_or_db
+from ..conftest import T_ANY_SQLA_PROVIDER
+from ..conftest import T_LITERAL_SESSION_OR_DB
 from .test_basic import CustomModelView
 
 
-def test_multiple_pk(app, sqla_db_ext, admin, session_or_db):
+def test_multiple_pk(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     # Test multiple primary keys - mix int and string together
     with app.app_context():
 
-        class Model(sqla_db_ext.Base):  # type: ignore[name-defined, misc]
+        class Model(sqla_db_ext.Base):  # type: ignore[misc, name-defined]
             __tablename__ = "model"
             id = Column(Integer, primary_key=True)
             id2 = Column(String(20), primary_key=True)
@@ -20,7 +30,7 @@ def test_multiple_pk(app, sqla_db_ext, admin, session_or_db):
 
         sqla_db_ext.create_all()
 
-        param = sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view = CustomModelView(Model, param, form_columns=["id", "id2", "test"])
         admin.add_view(view)
 
@@ -47,11 +57,16 @@ def test_multiple_pk(app, sqla_db_ext, admin, session_or_db):
         assert rv.status_code == 302
 
 
-def test_joined_inheritance(app, sqla_db_ext, admin, session_or_db):
+def test_joined_inheritance(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     # Test multiple primary keys - mix int and string together
     with app.app_context():
 
-        class Parent(sqla_db_ext.Base):  # type: ignore[name-defined, misc]
+        class Parent(sqla_db_ext.Base):  # type: ignore[misc, name-defined]
             __tablename__ = "parent"
             id = Column(Integer, primary_key=True)
             test = Column(String)
@@ -68,7 +83,7 @@ def test_joined_inheritance(app, sqla_db_ext, admin, session_or_db):
 
         sqla_db_ext.create_all()
 
-        param = sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view = CustomModelView(Child, param, form_columns=["id", "test", "name"])
         admin.add_view(view)
 
@@ -87,7 +102,12 @@ def test_joined_inheritance(app, sqla_db_ext, admin, session_or_db):
         assert "bar" in data
 
 
-def test_single_table_inheritance(app, sqla_db_ext, admin, session_or_db):
+def test_single_table_inheritance(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     class Parent(sqla_db_ext.Base):  # type: ignore[misc, name-defined]
         __tablename__ = "parent"
 
@@ -103,7 +123,7 @@ def test_single_table_inheritance(app, sqla_db_ext, admin, session_or_db):
 
     sqla_db_ext.create_all()
 
-    param = sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
+    param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
     view = CustomModelView(Child, param, form_columns=["id", "test", "name"])
     admin.add_view(view)
 
@@ -122,11 +142,16 @@ def test_single_table_inheritance(app, sqla_db_ext, admin, session_or_db):
     assert "bar" in data
 
 
-def test_concrete_table_inheritance(app, sqla_db_ext, admin, session_or_db):
+def test_concrete_table_inheritance(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     # Test multiple primary keys - mix int and string together
     with app.app_context():
 
-        class Parent(sqla_db_ext.Base):  # type: ignore[name-defined, misc]
+        class Parent(sqla_db_ext.Base):  # type: ignore[misc, name-defined]
             __tablename__ = "parent"
             id = Column(Integer, primary_key=True)
             test = Column(String)
@@ -137,7 +162,7 @@ def test_concrete_table_inheritance(app, sqla_db_ext, admin, session_or_db):
 
         sqla_db_ext.create_all()
 
-        param = sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view = CustomModelView(Child, param, form_columns=["id", "test", "name"])
         admin.add_view(view)
 
@@ -156,11 +181,16 @@ def test_concrete_table_inheritance(app, sqla_db_ext, admin, session_or_db):
         assert "bar" in data
 
 
-def test_concrete_multipk_inheritance(app, sqla_db_ext, admin, session_or_db):
+def test_concrete_multipk_inheritance(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     # Test multiple primary keys - mix int and string together
     with app.app_context():
 
-        class Parent(sqla_db_ext.Base):  # type: ignore[name-defined, misc]
+        class Parent(sqla_db_ext.Base):  # type: ignore[misc, name-defined]
             __tablename__ = "parent"
             id = Column(Integer, primary_key=True)
             test = Column(String)
@@ -179,7 +209,7 @@ def test_concrete_multipk_inheritance(app, sqla_db_ext, admin, session_or_db):
 
         sqla_db_ext.create_all()
 
-        param = sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view = CustomModelView(Child, param, form_columns=["id", "id2", "test", "name"])
         admin.add_view(view)
 

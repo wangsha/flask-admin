@@ -54,21 +54,15 @@ jobs:
         image: mongo:5.0.14-focal
         ports:
           - 27017:27017
-      azurite:
-        image: mcr.microsoft.com/azure-storage/azurite:latest
-        env:
-          executable: blob
-        ports:
-          - 10000:10000
     steps:
-      - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
-      - uses: astral-sh/setup-uv@803947b9bd8e9f986429fa0c5a41c367cd732b41 # v7.2.1
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
         with:
           enable-cache: true
           prune-cache: false
           cache-dependency-glob: |
             **/uv.lock
-      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: ${{ matrix.python }}
           allow-prereleases: true
@@ -77,12 +71,28 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libgeos-c1v5
       - name: Check out repository code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
+      - name: Start Azurite service
+        run: |
+          docker run -d \
+            --name azurite \
+            --network host \
+            -p 10000:10000 \
+            mcr.microsoft.com/azure-storage/azurite:latest \
+            azurite --skipApiVersionCheck --blobHost 0.0.0.0
       - name: Set up PostgreSQL hstore module
         env:
           PGPASSWORD: postgres
         run: psql -U postgres -h localhost -c 'CREATE EXTENSION hstore;' flask_admin_test
-      - run: uv run --locked tox run -e ${{ matrix.tox == 'normal' && format('py{0}', matrix.python) || matrix.tox }}
+      - name: Set tox env name
+        id: tox_env
+        run: |
+            if [ "${{ matrix.tox }}" = "normal" ]; then
+            echo "name=py$(echo '${{ matrix.python }}' | tr -d '.')" >> $GITHUB_OUTPUT
+            else
+            echo "name=${{ matrix.tox }}" >> $GITHUB_OUTPUT
+            fi
+      - run: uv run --locked tox run -e ${{ steps.tox_env.outputs.name }}
   not_tests:
     name: ${{ matrix.tox }}
     runs-on: ubuntu-latest
@@ -91,18 +101,18 @@ jobs:
       matrix:
         tox: ['docs', 'typing', 'style']
     steps:
-      - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
-      - uses: astral-sh/setup-uv@803947b9bd8e9f986429fa0c5a41c367cd732b41 # v7.2.1
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
         with:
           enable-cache: true
           prune-cache: false
           cache-dependency-glob: |
             **/uv.lock
-      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version-file: pyproject.toml
       - name: cache mypy
-        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ./.mypy_cache
           key: mypy|${{ hashFiles('pyproject.toml') }}

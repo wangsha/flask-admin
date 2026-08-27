@@ -1,3 +1,7 @@
+import typing as t
+from typing import Optional
+
+from flask import Flask
 from sqlalchemy import Column
 from sqlalchemy import DateTime
 from sqlalchemy import ForeignKey
@@ -7,27 +11,37 @@ from sqlalchemy import String
 from sqlalchemy.orm import backref
 from sqlalchemy.orm import relationship
 from wtforms import fields
+from wtforms.form import Form
 
+from flask_admin import Admin
 from flask_admin import form
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.contrib.sqla.fields import InlineModelFormList
 from flask_admin.contrib.sqla.validators import ItemsRequired
+from flask_admin.tests.conftest import skip_or_return_session_or_db
+from flask_admin.tests.conftest import T_ANY_SQLA_PROVIDER
+from flask_admin.tests.conftest import T_LITERAL_SESSION_OR_DB
 
 
-def test_inline_form(app, sqla_db_ext, admin, session_or_db):
+def test_inline_form(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     with app.app_context():
         client = app.test_client()
 
         # Set up models and database
-        class User(sqla_db_ext.Base):  # type: ignore[name-defined, misc]
+        class User(sqla_db_ext.Base):  # type: ignore[misc, name-defined]
             __tablename__ = "users"
             id = Column(Integer, primary_key=True)
             name = Column(String, unique=True)
 
-            def __init__(self, name=None):
-                self.name = name
+            def __init__(self, name: Optional[str] = None) -> None:
+                self.name = name  # type: ignore[assignment]
 
-        class UserInfo(sqla_db_ext.Base):  # type: ignore[name-defined, misc]
+        class UserInfo(sqla_db_ext.Base):  # type: ignore[misc, name-defined]
             __tablename__ = "user_info"
             id = Column(Integer, primary_key=True)
             key = Column(String, nullable=False)
@@ -46,7 +60,7 @@ def test_inline_form(app, sqla_db_ext, admin, session_or_db):
         class UserModelView(ModelView):
             inline_models = (UserInfo,)
 
-        param = sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view = UserModelView(User, param)
         admin.add_view(view)
 
@@ -109,7 +123,8 @@ def test_inline_form(app, sqla_db_ext, admin, session_or_db):
         rv = client.post("/admin/user/edit/?id=2", data=data)
         assert rv.status_code == 302
         assert sqla_db_ext.db.session.query(func.count(User.id)).scalar() == 2
-        assert sqla_db_ext.db.session.get(User, 2).name == "barf"
+        user = sqla_db_ext.db.session.get(User, 2)
+        assert user and user.name == "barf"
         assert sqla_db_ext.db.session.query(func.count(UserInfo.id)).scalar() == 1
         assert sqla_db_ext.db.session.query(UserInfo).one().key == "bar"
 
@@ -123,20 +138,25 @@ def test_inline_form(app, sqla_db_ext, admin, session_or_db):
         assert sqla_db_ext.db.session.query(func.count(UserInfo.id)).scalar() == 0
 
 
-def test_inline_form_required(app, sqla_db_ext, admin, session_or_db):
+def test_inline_form_required(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     with app.app_context():
         client = app.test_client()
 
         # Set up models and database
-        class User(sqla_db_ext.Base):  # type: ignore[name-defined, misc]
+        class User(sqla_db_ext.Base):  # type: ignore[misc,name-defined]
             __tablename__ = "users"
             id = Column(Integer, primary_key=True)
-            name = Column(String, unique=True)
+            name: str | None = Column(String, unique=True)  # type: ignore[assignment]
 
-            def __init__(self, name=None):
+            def __init__(self, name: Optional[str] = None) -> None:
                 self.name = name
 
-        class UserEmail(sqla_db_ext.Base):  # type: ignore[name-defined, misc]
+        class UserEmail(sqla_db_ext.Base):  # type: ignore[misc,name-defined]
             __tablename__ = "user_info"
             id = Column(Integer, primary_key=True)
             email = Column(String, nullable=False, unique=True)
@@ -156,7 +176,7 @@ def test_inline_form_required(app, sqla_db_ext, admin, session_or_db):
             inline_models = (UserEmail,)
             form_args = {"emails": {"validators": [ItemsRequired()]}}
 
-        param = sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view = UserModelView(User, param)
         admin.add_view(view)
 
@@ -186,24 +206,29 @@ def test_inline_form_required(app, sqla_db_ext, admin, session_or_db):
         assert sqla_db_ext.db.session.query(func.count(UserEmail.id)).scalar() == 1
 
 
-def test_inline_form_ajax_fk(app, sqla_db_ext, admin, session_or_db):
+def test_inline_form_ajax_fk(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     with app.app_context():
         # Set up models and database
-        class User(sqla_db_ext.Base):  # type: ignore[name-defined, misc]
+        class User(sqla_db_ext.Base):  # type: ignore[misc, name-defined]
             __tablename__ = "users"
             id = Column(Integer, primary_key=True)
-            name = Column(String, unique=True)
+            name: str | None = Column(String, unique=True)  # type: ignore[assignment]
 
-            def __init__(self, name=None):
+            def __init__(self, name: Optional[str] = None) -> None:
                 self.name = name
 
-        class Tag(sqla_db_ext.Base):  # type: ignore[name-defined, misc]
+        class Tag(sqla_db_ext.Base):  # type: ignore[misc, name-defined]
             __tablename__ = "tags"
 
             id = Column(Integer, primary_key=True)
             name = Column(String, unique=True)
 
-        class UserInfo(sqla_db_ext.Base):  # type: ignore[name-defined, misc]
+        class UserInfo(sqla_db_ext.Base):  # type: ignore[misc, name-defined]
             __tablename__ = "user_info"
             id = Column(Integer, primary_key=True)
             key = Column(String, nullable=False)
@@ -228,7 +253,7 @@ def test_inline_form_ajax_fk(app, sqla_db_ext, admin, session_or_db):
 
             inline_models = [(UserInfo, opts)]  # type: ignore[list-item]
 
-        param = sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view = UserModelView(User, param)
         admin.add_view(view)
 
@@ -241,10 +266,15 @@ def test_inline_form_ajax_fk(app, sqla_db_ext, admin, session_or_db):
         assert "userinfo-tag" in view._form_ajax_refs
 
 
-def test_inline_form_self(app, sqla_db_ext, admin, session_or_db):
+def test_inline_form_self(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     with app.app_context():
 
-        class Tree(sqla_db_ext.Base):  # type: ignore[name-defined, misc]
+        class Tree(sqla_db_ext.Base):  # type: ignore[misc, name-defined]
             __tablename__ = "tree"
             id = Column(Integer, primary_key=True)
             parent_id = Column(Integer, ForeignKey("tree.id"))
@@ -255,7 +285,7 @@ def test_inline_form_self(app, sqla_db_ext, admin, session_or_db):
         class TreeView(ModelView):
             inline_models = (Tree,)
 
-        param = sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view = TreeView(Tree, param)
 
         parent = Tree()
@@ -264,20 +294,25 @@ def test_inline_form_self(app, sqla_db_ext, admin, session_or_db):
         assert form.parent.data == parent  # type: ignore[attr-defined]
 
 
-def test_inline_form_base_class(app, sqla_db_ext, admin, session_or_db):
+def test_inline_form_base_class(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
     client = app.test_client()
 
     with app.app_context():
         # Set up models and database
-        class User(sqla_db_ext.Base):  # type: ignore[name-defined, misc]
+        class User(sqla_db_ext.Base):  # type: ignore[misc, name-defined]
             __tablename__ = "users"
             id = Column(Integer, primary_key=True)
-            name = Column(String, unique=True)
+            name: str | None = Column(String, unique=True)  # type: ignore[assignment]
 
-            def __init__(self, name=None):
+            def __init__(self, name: Optional[str] = None) -> None:
                 self.name = name
 
-        class UserEmail(sqla_db_ext.Base):  # type: ignore[name-defined, misc]
+        class UserEmail(sqla_db_ext.Base):  # type: ignore[misc, name-defined]
             __tablename__ = "user_info"
             id = Column(Integer, primary_key=True)
             email = Column(String, nullable=False, unique=True)
@@ -294,15 +329,15 @@ def test_inline_form_base_class(app, sqla_db_ext, admin, session_or_db):
 
         # Customize error message
         class StubTranslation:
-            def gettext(self, *args):
+            def gettext(self, *args: t.Any) -> str:
                 return "success!"
 
-            def ngettext(self, *args):
+            def ngettext(self, *args: t.Any) -> str:
                 return "success!"
 
         class StubBaseForm(form.BaseForm):
             class Meta:
-                def get_translations(self, form):
+                def get_translations(self, form: Form) -> StubTranslation:
                     return StubTranslation()
 
         # Set up Admin
@@ -310,7 +345,7 @@ def test_inline_form_base_class(app, sqla_db_ext, admin, session_or_db):
             inline_models = ((UserEmail, {"form_base_class": StubBaseForm}),)  # type: ignore[assignment]
             form_args = {"emails": {"validators": [ItemsRequired()]}}
 
-        param = sqla_db_ext.db.session if session_or_db == "session" else sqla_db_ext.db
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view = UserModelView(User, param)
         admin.add_view(view)
 

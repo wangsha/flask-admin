@@ -3,8 +3,7 @@ import typing as t
 import warnings
 from collections.abc import Callable
 
-from wtforms import Field
-from wtforms import Form
+import wtforms
 from wtforms.fields import HiddenField
 from wtforms.fields.core import UnboundField
 from wtforms.validators import InputRequired
@@ -32,8 +31,8 @@ class BaseListForm(BaseForm):
 
 
 def create_editable_list_form(
-    form_base_class: type[Form],
-    form_class: type[Form],
+    form_base_class: type[wtforms.Form],
+    form_class: type[wtforms.Form],
     widget: t.Callable[..., t.Any] | None = None,
 ) -> type[BaseListForm]:
     """
@@ -110,7 +109,7 @@ class InlineBaseFormAdmin:
         else:
             self._form_rules = None
 
-    def get_form(self) -> t.Union[T_MODEL_VIEW, None]:
+    def get_form(self) -> type[BaseForm] | None:
         """
         If you want to use completely custom form for inline field, you can override
         Flask-Admin form generation logic by overriding this method and returning your
@@ -135,7 +134,7 @@ class InlineBaseFormAdmin:
         return form_class
 
     def on_model_change(
-        self, form: Form, model: T_MODEL_VIEW, is_created: bool
+        self, form: wtforms.Form, model: T_MODEL_VIEW, is_created: bool
     ) -> None:
         """
         Called when inline model is about to be saved.
@@ -150,7 +149,7 @@ class InlineBaseFormAdmin:
         pass
 
     def _on_model_change(
-        self, form: Form, model: T_MODEL_VIEW, is_created: bool
+        self, form: wtforms.Form, model: T_MODEL_VIEW, is_created: bool
     ) -> None:
         """
         Compatibility helper.
@@ -299,5 +298,5 @@ class FieldPlaceholder:
     Field placeholder for model convertors.
     """
 
-    def __init__(self, field: Field) -> None:
+    def __init__(self, field: "UnboundField[t.Any]") -> None:
         self.field = field
