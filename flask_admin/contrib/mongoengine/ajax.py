@@ -72,23 +72,16 @@ class QueryAjaxModelLoader(AjaxModelLoader):
     def get_list(
         self, query: QuerySet, offset: int = 0, limit: int = DEFAULT_PAGE_SIZE
     ) -> QuerySet:
-        if len(query) > 0:
+        qs = self.model.objects
+        if query:
             criteria = None
-
             for field in self._cached_fields:
-                flt = {f"{field.name}__icontains": query}
-
-                if not criteria:
-                    criteria = mongoengine.Q(**flt)
-                else:
-                    criteria |= mongoengine.Q(**flt)
-
-            query = query.filter(criteria)
-
+                q = mongoengine.Q(**{f"{field.name}__icontains": query})
+                criteria = q if criteria is None else criteria | q
+            qs = qs.filter(criteria)
         if offset:
-            query = query.skip(offset)
-
-        return query.limit(limit).all()
+            qs = qs.skip(offset)
+        return qs.limit(limit).all()
 
 
 def create_ajax_loader(
