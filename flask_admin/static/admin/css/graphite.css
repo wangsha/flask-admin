@@ -148,3 +148,37 @@ select, select.form-control { background:var(--background); color:var(--text); b
 .select2-container-active .select2-choice, .select2-container-active .select2-choices,
 .select2-container--focus .select2-selection { border-color:var(--muted)!important; box-shadow:none!important; }
 .filter .select2-container, .filter input, .filter select { vertical-align:middle; }
+
+/* Date and time filters use Date Range Picker, including its legacy markup. */
+.daterangepicker, .daterangepicker .calendar-date, .daterangepicker .calendar-table,
+.daterangepicker .ranges, .daterangepicker .drp-buttons {
+    background:var(--surface); color:var(--text); border-color:#414338; border-radius:0;
+}
+.daterangepicker::before { border-bottom-color:#414338; }
+.daterangepicker::after { border-bottom-color:var(--surface); }
+.daterangepicker.drop-up::before { border-top-color:#414338; }
+.daterangepicker.drop-up::after { border-top-color:var(--surface); }
+.daterangepicker table { background:transparent; color:var(--text); }
+.daterangepicker td, .daterangepicker th { border-radius:0; font-size:12px; }
+.daterangepicker td.off, .daterangepicker td.off.in-range, .daterangepicker td.off.start-date,
+.daterangepicker td.off.end-date { background:var(--surface); color:var(--muted); }
+.daterangepicker td.available:hover, .daterangepicker th.available:hover,
+.daterangepicker .ranges li:hover { background:#303328; color:var(--text); }
+.daterangepicker td.in-range { background:#303328; color:var(--text); }
+.daterangepicker td.active, .daterangepicker td.active:hover,
+.daterangepicker .ranges li.active { background:var(--text); color:var(--background); }
+.daterangepicker select, .daterangepicker select.monthselect, .daterangepicker select.yearselect,
+.daterangepicker select.hourselect, .daterangepicker select.minuteselect,
+.daterangepicker select.secondselect, .daterangepicker select.ampmselect {
+    display:inline-block; width:auto; min-height:28px; height:28px; padding:2px 5px;
+    font:12px/20px "Helvetica Neue",Helvetica,Arial,sans-serif;
+    background:var(--background); color:var(--text); border:1px solid #414338; border-radius:0;
+}
+.daterangepicker select.monthselect { width:56%; }
+.daterangepicker select.yearselect { width:34%; }
+.daterangepicker .calendar-time { white-space:nowrap; text-align:center; margin:8px 0; }
+.daterangepicker .calendar-time select { width:54px; }
+.daterangepicker .calendar-table .next span, .daterangepicker .calendar-table .prev span { border-color:var(--text); }
+.daterangepicker .range_inputs, .daterangepicker .drp-buttons { border-color:var(--line); }
+.daterangepicker .btn { min-height:32px; padding:6px 12px; font:11px/18px monospace; }
+.daterangepicker .input-mini { background:var(--background); color:var(--text); border-color:#414338; }
