@@ -746,3 +746,28 @@ unique endpoint for each, and using that as the prefix. So, you could use::
 If your view endpoint was defined like::
 
     admin.add_view(CustomView(name='Analytics', endpoint='analytics'))
+
+Graphite theme
+-------------
+
+For a dark interface with warm ivory text, square controls, and compact tables,
+select the bundled Graphite theme::
+
+    from flask_admin import Admin
+    from flask_admin.theme import GraphiteTheme
+
+    admin = Admin(app, name="My workspace", theme=GraphiteTheme())
+
+The theme uses Bootstrap 4's existing forms, menus, and JavaScript. All theme
+assets are served locally by Flask-Admin. No frontend build or additional
+Python dependency is required. It works with all model backends and uses the
+application's configured admin name and navigation.
+
+Each project's login, chat, and other non-admin screens remain application
+owned. Custom admin templates should extend ``admin/master.html`` and keep
+``super()`` when overriding ``head_css`` to retain the theme styles.
+
+To adjust the palette, add a stylesheet to a view's ``extra_css`` and override
+``--background``, ``--surface``, ``--text``, ``--muted``, and ``--line``. View
+styles are loaded after the theme. To keep the original appearance, explicitly
+select ``Bootstrap4Theme()``.

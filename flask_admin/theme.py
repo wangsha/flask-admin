@@ -28,6 +28,28 @@ class BootstrapTheme(Theme):
     base_template: str = "admin/base.html"
     swatch: str = "default"
     fluid: bool = False
+    stylesheets: tuple[str, ...] = ()
 
 
 Bootstrap4Theme = partial(BootstrapTheme, folder="bootstrap4")
+
+
+@dataclass
+class GraphiteTheme(BootstrapTheme):
+    """Dark, ivory-accented theme for dense administrative interfaces.
+
+    Uses the existing Bootstrap 4 components and JavaScript. Styles and
+    templates are bundled with Flask-Admin; no CDN or build step is needed.
+
+    Usage::
+
+        admin = Admin(app, name="My workspace", theme=GraphiteTheme())
+
+    Override the ``--background``, ``--surface``, ``--text``, ``--muted``, and
+    ``--line`` CSS variables in a view's ``extra_css`` to customize the palette.
+    """
+
+    folder: typing.Literal["bootstrap4"] = "bootstrap4"
+    base_template: str = "admin/graphite_base.html"
+    fluid: bool = True
+    stylesheets: tuple[str, ...] = ("admin/css/graphite.css",)

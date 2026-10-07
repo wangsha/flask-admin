@@ -8,3 +8,9 @@
 
     .. autoclass:: BootstrapTheme
         :members:
+
+    GraphiteTheme
+    -------------
+
+    .. autoclass:: GraphiteTheme
+        :members:

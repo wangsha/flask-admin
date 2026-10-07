@@ -1,0 +1,8 @@
+{% extends 'admin/base.html' %}
+{% block brand %}
+    <a class="navbar-brand site-brand" href="{{ admin_view.admin.url }}"><span class="site-mark" aria-hidden="true"></span>{{ admin_view.admin.name }}</a>
+{% endblock %}
+{% block page_body %}
+    <a class="admin-mobile-brand site-brand" href="{{ admin_view.admin.url }}"><span class="site-mark" aria-hidden="true"></span>{{ admin_view.admin.name }}</a>
+    {{ super() }}
+{% endblock %}
