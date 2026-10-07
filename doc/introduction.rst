@@ -60,16 +60,12 @@ Here, both the *name* and *theme* parameters are optional, have a look to the AP
 Alternatively, you could use the :meth:`~flask_admin.base.Admin.init_app` method.
 
 If you start this application and navigate to `http://localhost:5000/admin/ <http://localhost:5000/admin/>`_,
-you should see an empty page with a navigation bar on top. Customize the look by
-specifying one of the included Bootswatch themes (see https://bootswatch.com/4/ for a preview of the swatches).
-Here is list of all available themes:::
+you should see an empty page with a navigation bar on top. Customize the look
+with a Bootswatch theme (see https://bootswatch.com/4/ for previews). In this
+slim fork Bootstrap and Bootswatch assets are served from the existing pinned
+jsDelivr release rather than bundled locally. Existing swatch names remain
+supported, including ``default``, ``simplex``, ``cerulean``, and ``cosmo``.
 
-  all_themes = [
-    "default", "cerulean", "cosmo", "cyborg",  "darkly",
-    "flatly", "journal", "litera", "lumen", "lux", "materia",
-    "minty", "pulse", "sandstone", "simplex", "sketchy", "slate",
-    "solar", "spacelab",  "superhero", "united", "yeti"
-  ]
 
 
 
@@ -759,7 +755,8 @@ select the bundled Graphite theme::
     admin = Admin(app, name="My workspace", theme=GraphiteTheme())
 
 The theme uses Bootstrap 4's existing forms, menus, and JavaScript. All theme
-assets are served locally by Flask-Admin. No frontend build or additional
+CSS and templates are served locally by Flask-Admin; Bootstrap and vendor
+assets use the existing jsDelivr URLs. No frontend build or additional
 Python dependency is required. It works with all model backends and uses the
 application's configured admin name and navigation.
 
@@ -771,3 +768,13 @@ To adjust the palette, add a stylesheet to a view's ``extra_css`` and override
 ``--background``, ``--surface``, ``--text``, ``--muted``, and ``--line``. View
 styles are loaded after the theme. To keep the original appearance, explicitly
 select ``Bootstrap4Theme()``.
+
+Bundled asset size
+------------------
+
+This slim fork serves Bootstrap 4, Bootswatch, and vendor CSS/JavaScript through
+``admin/static.html`` using the pinned jsDelivr upstream release. Bootstrap's
+local stylesheets, scripts, and source maps are therefore not bundled. The
+Graphite theme and Flask-Admin's own CSS/JavaScript remain local. An internet
+connection to jsDelivr is required for Bootstrap and vendor assets, as before
+this cleanup.

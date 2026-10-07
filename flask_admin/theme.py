@@ -39,7 +39,8 @@ class GraphiteTheme(BootstrapTheme):
     """Dark, ivory-accented theme for dense administrative interfaces.
 
     Uses the existing Bootstrap 4 components and JavaScript. Styles and
-    templates are bundled with Flask-Admin; no CDN or build step is needed.
+    templates are bundled with Flask-Admin; no build step is needed.
+    Bootstrap and vendor assets use the fork's existing jsDelivr CDN URLs.
 
     Usage::
 
