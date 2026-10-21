@@ -76,6 +76,13 @@ def dict_formatter(view: T_MODEL_VIEW, value: t.Any, name: str) -> str:
     return json.dumps(value, ensure_ascii=False)
 
 
+def detail_json_formatter(view: T_MODEL_VIEW, value: t.Any, name: str) -> str:
+    """Display structured values as indented, escaped JSON on details pages."""
+    return Markup('<pre class="fa-detail-json">{}</pre>').format(
+        json.dumps(value, ensure_ascii=False, indent=2, default=str)
+    )
+
+
 BASE_FORMATTERS: T_COLUMN_TYPE_FORMATTERS = {
     type(None): empty_formatter,
     bool: bool_formatter,
@@ -91,8 +98,8 @@ EXPORT_FORMATTERS: T_COLUMN_TYPE_FORMATTERS = {
 
 DETAIL_FORMATTERS: T_COLUMN_TYPE_FORMATTERS = {
     type(None): empty_formatter,
-    list: list_formatter,
-    dict: dict_formatter,
+    list: detail_json_formatter,
+    dict: detail_json_formatter,
 }
 
 BASE_FORMATTERS[Enum] = enum_formatter

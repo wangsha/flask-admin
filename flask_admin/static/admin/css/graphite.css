@@ -229,3 +229,12 @@ select, select.form-control { background:var(--background); color:var(--text); b
     #filter_form .filters td:last-child { flex:1 1 180px; }
     #filter_form .filter-val:not(.select2-container) { width:100%; }
 }
+
+/* Keep raw record details readable without widening the page. */
+.fa-details-table { width:100%; table-layout:fixed; }
+.fa-details-table td { vertical-align:top; overflow-wrap:anywhere; }
+.fa-details-table td:first-child { width:180px; }
+.fa-details-table .fa-detail-json { margin:0; padding:12px; white-space:pre-wrap; overflow-wrap:anywhere; font:13px/1.5 monospace; color:var(--text, #e8e5d7); background:transparent; border:0; }
+.fa-details-filter { display:flex; align-items:center; gap:12px; padding:16px 0; }
+.fa-details-filter #fa_filter { width:320px; max-width:100%; height:38px; min-height:38px; padding:6px 10px; margin:0!important; font-size:14px; }
+@media(max-width:600px) { .fa-details-table td:first-child { width:110px; } .fa-details-filter #fa_filter { width:100%; } }
