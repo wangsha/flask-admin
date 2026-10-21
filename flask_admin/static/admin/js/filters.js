@@ -165,7 +165,7 @@ var AdminFilters = function(element, filtersElement, filterGroups, activeFilters
     });
 
     // show "Apply Filter" button when filter input is changed
-    $('.filter-val', $root).on('input change', function() {
+    $root.on('input change', '.filter-val', function() {
         $('button', $root).show();
     });
 
