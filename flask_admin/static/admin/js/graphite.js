@@ -14,6 +14,20 @@
     root.setAttribute('data-theme', selectedTheme || (preference.matches ? 'dark' : 'light'));
 
     document.addEventListener('DOMContentLoaded', function () {
+        var $ = window.jQuery;
+        if ($ && $.fn.select2) {
+            $('.admin-form select:not([multiple]):not([data-role])').each(function () {
+                var select = $(this);
+                if (!select.data('select2')) {
+                    select.select2({
+                        width: '100%',
+                        minimumResultsForSearch: 10,
+                        dropdownCssClass: 'graphite-form-dropdown'
+                    });
+                }
+            });
+        }
+
         var button = document.querySelector('[data-theme-toggle]');
         if (!button) return;
 
