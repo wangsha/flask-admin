@@ -6,3 +6,10 @@
     <a class="admin-mobile-brand site-brand" href="{{ admin_view.admin.url }}"><span class="site-mark" aria-hidden="true"></span>{{ admin_view.admin.name }}</a>
     {{ super() }}
 {% endblock %}
+{% block head %}
+    {{ super() }}
+    <script {{ admin_csp_nonce_attribute }} src="{{ admin_static.url(filename='admin/js/graphite.js', v='1.0.0') }}"></script>
+{% endblock %}
+{% block navbar_controls %}
+    <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch to light theme" aria-pressed="false" hidden>Light mode</button>
+{% endblock %}

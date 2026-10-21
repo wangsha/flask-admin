@@ -150,8 +150,8 @@
             {% endblock %}
         </tr>
         {% else %}
-        <tr>
-            <td colspan="999">
+        <tr class="model-list-empty">
+            <td colspan="{{ list_columns|length + (1 if actions else 0) + (1 if admin_view.column_display_actions else 0) }}">
                 {% block empty_list_message %}
                 <div class="text-center">
                     {{ admin_view.get_empty_list_message() }}
