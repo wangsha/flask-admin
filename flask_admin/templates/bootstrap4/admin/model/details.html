@@ -35,15 +35,9 @@
     {% for c, name in details_columns %}
       <tr>
         <td class="detail-label-cell">
-          <div class="detail-label"><b>{{ name }}</b>
-          <button type="button" class="btn btn-sm detail-copy" data-detail-copy
-                  aria-label="{{ _gettext('Copy %(name)s', name=name) }}"
-                  data-copy-success="{{ _gettext('Copied') }}" data-copy-error="{{ _gettext('Copy failed') }}">
-            <span aria-live="polite">{{ _gettext('Copy') }}</span>
-          </button>
-          </div>
+          <b>{{ name }}</b>
         </td>
-        <td class="detail-value-cell">
+        <td class="detail-value-cell" title="{{ _gettext('Double-click to copy value') }}">
           <div class="detail-value">{{ get_value(model, c) }}</div>
         </td>
       </tr>
@@ -53,7 +47,6 @@
 {% endblock %}
 
 {% block tail %}
-  <script {{ admin_csp_nonce_attribute }} src="{{ admin_static.url(filename='admin/js/details_copy.js', v='1.0.1') }}"></script>
   {{ super() }}
   <script {{ admin_csp_nonce_attribute }} src="{{ admin_static.url(filename='admin/js/details_filter.js', v='1.0.0') }}"></script>
 {% endblock %}

@@ -81,9 +81,10 @@
     }
 
     document.addEventListener('dblclick', async (event) => {
-        const cell = event.target.closest('.model-list tbody td[class*="col-"]');
+        const cell = event.target.closest('.model-list tbody td[class*="col-"], .fa-details-table .detail-value-cell');
         if (!cell || event.target.closest('a, button, input, select, textarea, [contenteditable="true"]')) return;
-        const value = cell.innerText.trim();
+        const detailValue = cell.querySelector('.detail-value');
+        const value = detailValue ? detailValue.innerText : cell.innerText.trim();
         if (!value) return;
         try {
             await navigator.clipboard.writeText(value);
