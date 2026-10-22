@@ -290,7 +290,7 @@ select, select.form-control { background:var(--background); color:var(--text); b
     display:inline-flex; align-items:center; justify-content:center; vertical-align:middle;
     width:32px; height:32px; min-height:32px; padding:0; margin:0 4px 0 0;
     border:1px solid transparent; border-radius:0; background:transparent;
-    color:var(--muted); font-size:15px; line-height:1; text-decoration:none;
+    color:var(--text); font-size:15px; line-height:1; text-decoration:none;
 }
 .model-list .list-buttons-column a.icon:hover,
 .model-list .list-buttons-column form.icon button:hover {
@@ -309,4 +309,4 @@ select, select.form-control { background:var(--background); color:var(--text); b
 .pagination .page-link:focus-visible { outline:2px solid var(--text); outline-offset:2px; box-shadow:none; }
 @media(max-width:575px) { .pagination { gap:4px; } .pagination .page-link { min-width:34px; height:36px; padding:7px 9px; } }
 
-.model-list .row-action-icon { display:block; width:16px; height:16px; flex:none; }
+.model-list .row-action-icon { display:block; width:18px; height:18px; stroke-width:2; flex:none; }
