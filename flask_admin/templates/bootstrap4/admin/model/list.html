@@ -83,19 +83,19 @@
                     {% endblock %}
                     {% for c, name in list_columns %}
                     {% set column = loop.index0 %}
-                    <th class="column-header col-{{c | replace('.', '-') }}">
+                    <th class="column-header col-{{c | replace('.', '-') }}"{% if admin_view.is_sortable(c) %} aria-sort="{{ ('descending' if sort_desc else 'ascending') if sort_column == column else 'none' }}"{% endif %}>
                         {% if admin_view.is_sortable(c) %}
                             {% if sort_column == column %}
-                                <a href="{{ sort_url(column, True) }}" title="{{ _gettext('Sort by %(name)s', name=name) }}">
-                                    {{ name }}
+                                <a class="column-sort-link" href="{{ sort_url(column, True) }}" title="{{ _gettext('Sort by %(name)s', name=name) }}">
+                                    <span class="column-sort-label">{{ name }}</span>
                                     {% if sort_desc %}
-                                        <span class="fa fa-chevron-down glyphicon glyphicon-chevron-down"></span>
+                                        <span class="column-sort-icon column-sort-desc fa fa-chevron-down glyphicon glyphicon-chevron-down" aria-hidden="true"></span>
                                     {% else %}
-                                        <span class="fa fa-chevron-up glyphicon glyphicon-chevron-up"></span>
+                                        <span class="column-sort-icon column-sort-asc fa fa-chevron-up glyphicon glyphicon-chevron-up" aria-hidden="true"></span>
                                     {% endif %}
                                 </a>
                             {% else %}
-                                <a href="{{ sort_url(column) }}" title="{{ _gettext('Sort by %(name)s', name=name) }}">{{ name }}</a>
+                                <a class="column-sort-link" href="{{ sort_url(column) }}" title="{{ _gettext('Sort by %(name)s', name=name) }}"><span class="column-sort-label">{{ name }}</span><span class="column-sort-icon column-sort-idle" aria-hidden="true"></span></a>
                             {% endif %}
                         {% else %}
                             {{ name }}

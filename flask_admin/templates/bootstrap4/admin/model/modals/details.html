@@ -24,8 +24,13 @@
         <td>
           <b>{{ name }}</b>
         </td>
-        <td>
-        {{ get_value(model, c) }}
+        <td class="detail-value-cell">
+          <div class="detail-value">{{ get_value(model, c) }}</div>
+          <button type="button" class="btn btn-sm detail-copy" data-detail-copy
+                  aria-label="{{ _gettext('Copy %(name)s', name=name) }}"
+                  data-copy-success="{{ _gettext('Copied') }}" data-copy-error="{{ _gettext('Copy failed') }}">
+            <span aria-live="polite">{{ _gettext('Copy') }}</span>
+          </button>
         </td>
       </tr>
     {% endfor %}
@@ -35,6 +40,7 @@
 {% endblock %}
 
 {% block tail %}
+  <script {{ admin_csp_nonce_attribute }} src="{{ admin_static.url(filename='admin/js/details_copy.js', v='1.0.0') }}"></script>
   <script {{ admin_csp_nonce_attribute }} src="{{ admin_static.url(filename='admin/js/details_filter.js', v='1.0.0') }}"></script>
   <script {{ admin_csp_nonce_attribute }}>window.faForm.applyGlobalStyles(document.getElementsByClassName('modal-content'));</script>
 {% endblock %}

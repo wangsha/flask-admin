@@ -310,3 +310,19 @@ select, select.form-control { background:var(--background); color:var(--text); b
 @media(max-width:575px) { .pagination { gap:4px; } .pagination .page-link { min-width:34px; height:36px; padding:7px 9px; } }
 
 .model-list .row-action-icon { display:block; width:18px; height:18px; stroke-width:2; flex:none; }
+
+/* Keep sorting indicators separate from wrapping column labels. */
+.model-list .column-sort-link { display:flex; align-items:center; justify-content:space-between; gap:8px; text-decoration:none; }
+.model-list .column-sort-label { min-width:0; }
+.model-list .column-sort-icon { display:inline-flex; align-items:center; justify-content:center; flex:0 0 10px; width:10px; height:14px; }
+.model-list .column-sort-icon::before { content:""; display:block; width:6px; height:6px; border-right:1px solid currentColor; border-bottom:1px solid currentColor; transform:rotate(45deg); }
+.model-list .column-sort-asc::before { transform:rotate(225deg); }
+.model-list .column-sort-idle { visibility:hidden; }
+.model-list .column-sort-link:hover .column-sort-idle,
+.model-list .column-sort-link:focus-visible .column-sort-idle { visibility:visible; color:var(--muted); }
+
+.fa-details-table .detail-value-cell { position:relative; padding-right:88px; }
+.fa-details-table .detail-value { overflow-wrap:anywhere; min-width:0; }
+.fa-details-table .detail-value pre { white-space:pre-wrap; overflow-wrap:anywhere; }
+.fa-details-table .detail-copy { position:absolute; right:12px; top:10px; min-height:28px; height:28px; padding:4px 8px; border:1px solid var(--line); background:var(--surface); color:var(--muted); font:12px/18px var(--font-sans); text-transform:none; letter-spacing:0; }
+.fa-details-table .detail-copy:hover { background:var(--hover-surface); color:var(--text); }
