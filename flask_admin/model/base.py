@@ -2177,7 +2177,7 @@ class BaseModelView(BaseView, ActionsMixin):
                         url = view.get_url(
                             f"{view.endpoint}.details_view", id=pk
                         )
-                        return Markup('<a href="{}">{}</a>').format(url, label)
+                        return Markup('<a class="detail-reference-link" href="{}">{}</a>').format(url, label)
             return label
 
         if isinstance(reference, (list, tuple)):

@@ -349,3 +349,26 @@ select, select.form-control { background:var(--background); color:var(--text); b
 
 /* Hide obsolete copy controls when a cached detail template is still served. */
 .fa-details-table .detail-copy, .fa-details-table [data-detail-copy] { display:none!important; }
+
+/* Square native checkbox controls retain keyboard and form behavior. */
+.model-list input[type="checkbox"] {
+    -webkit-appearance:none; appearance:none; display:inline-grid; place-content:center;
+    width:16px; height:16px; margin:0; vertical-align:middle; cursor:pointer;
+    border:1px solid var(--muted); border-radius:0; background:var(--surface); color:var(--background);
+}
+.model-list input[type="checkbox"]::before { content:""; width:8px; height:4px; border-left:2px solid currentColor; border-bottom:2px solid currentColor; transform:translateY(-1px) rotate(-45deg); visibility:hidden; }
+.model-list input[type="checkbox"]:checked,
+.model-list input[type="checkbox"]:indeterminate { background:var(--text); border-color:var(--text); }
+.model-list input[type="checkbox"]:checked::before { visibility:visible; }
+.model-list input[type="checkbox"]:indeterminate::before { visibility:visible; height:0; border-left:0; transform:none; }
+.model-list input[type="checkbox"]:hover { border-color:var(--text); }
+.model-list input[type="checkbox"]:focus-visible { outline:2px solid var(--text); outline-offset:3px; }
+.model-list input[type="checkbox"]:disabled { opacity:.45; cursor:default; }
+.model-list .list-checkbox-column { width:40px; text-align:center; }
+.model-list td:has(> .action-checkbox) { width:40px; text-align:center; vertical-align:top; padding-top:16px; }
+@media (forced-colors:active) { .model-list input[type="checkbox"] { appearance:auto; } .model-list input[type="checkbox"]::before { content:none; } }
+
+.fa-details-table .detail-reference-link { color:var(--text); text-decoration:underline; text-decoration-color:var(--muted); text-underline-offset:3px; text-decoration-thickness:1px; cursor:pointer; }
+.fa-details-table .detail-reference-link::after { content:" →"; display:inline-block; margin-left:4px; text-decoration:none; }
+.fa-details-table .detail-reference-link:hover { color:var(--hover-text); text-decoration-color:currentColor; background:var(--hover-surface); }
+.fa-details-table .detail-reference-link:focus-visible { outline:2px solid var(--text); outline-offset:3px; }
