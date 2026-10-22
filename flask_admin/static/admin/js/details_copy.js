@@ -24,7 +24,7 @@
     document.addEventListener('click', async function (event) {
         var button = event.target.closest('[data-detail-copy]');
         if (!button || button.disabled) return;
-        var value = button.closest('td').querySelector('.detail-value');
+        var value = button.closest('tr').querySelector('.detail-value');
         var text = value.innerText;
         var label = button.querySelector('span');
         var original = label.textContent;

@@ -321,8 +321,9 @@ select, select.form-control { background:var(--background); color:var(--text); b
 .model-list .column-sort-link:hover .column-sort-idle,
 .model-list .column-sort-link:focus-visible .column-sort-idle { visibility:visible; color:var(--muted); }
 
-.fa-details-table .detail-value-cell { position:relative; padding-right:88px; }
+.fa-details-table .detail-label-cell { vertical-align:top; }
+.fa-details-table .detail-label { display:flex; align-items:center; justify-content:space-between; gap:12px; }
 .fa-details-table .detail-value { overflow-wrap:anywhere; min-width:0; }
 .fa-details-table .detail-value pre { white-space:pre-wrap; overflow-wrap:anywhere; }
-.fa-details-table .detail-copy { position:absolute; right:12px; top:10px; min-height:28px; height:28px; padding:4px 8px; border:1px solid var(--line); background:var(--surface); color:var(--muted); font:12px/18px var(--font-sans); text-transform:none; letter-spacing:0; }
+.fa-details-table .detail-copy { position:static; flex-shrink:0; min-height:28px; height:28px; padding:4px 8px; border:1px solid var(--line); background:var(--surface); color:var(--muted); font:12px/18px var(--font-sans); text-transform:none; letter-spacing:0; }
 .fa-details-table .detail-copy:hover { background:var(--hover-surface); color:var(--text); }
