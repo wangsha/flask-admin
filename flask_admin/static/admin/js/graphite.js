@@ -58,3 +58,39 @@
         });
     });
 }());
+
+(() => {
+    let toast;
+    let dismissTimer;
+
+    function showToast(message) {
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.className = 'cell-copy-toast';
+            toast.setAttribute('role', 'status');
+            toast.setAttribute('aria-live', 'polite');
+            document.body.appendChild(toast);
+        }
+        clearTimeout(dismissTimer);
+        toast.textContent = message;
+        toast.classList.add('is-visible');
+        dismissTimer = setTimeout(() => {
+            toast.classList.remove('is-visible');
+            toast.textContent = '';
+        }, 1600);
+    }
+
+    document.addEventListener('dblclick', async (event) => {
+        const cell = event.target.closest('.model-list tbody td[class*="col-"]');
+        if (!cell || event.target.closest('a, button, input, select, textarea, [contenteditable="true"]')) return;
+        const value = cell.innerText.trim();
+        if (!value) return;
+        try {
+            await navigator.clipboard.writeText(value);
+            window.getSelection()?.removeAllRanges();
+            showToast('Value copied');
+        } catch {
+            showToast('Could not copy value');
+        }
+    });
+})();

@@ -309,7 +309,7 @@ select, select.form-control { background:var(--background); color:var(--text); b
 .pagination .page-link:focus-visible { outline:2px solid var(--text); outline-offset:2px; box-shadow:none; }
 @media(max-width:575px) { .pagination { gap:4px; } .pagination .page-link { min-width:34px; height:36px; padding:7px 9px; } }
 
-.model-list .row-action-icon { display:block; width:18px; height:18px; stroke-width:2; flex:none; }
+.model-list .row-action-icon { display:block; width:18px; height:18px; stroke-width:1.25; flex:none; }
 
 /* Keep sorting indicators separate from wrapping column labels. */
 .model-list .column-sort-link { display:flex; align-items:center; justify-content:space-between; gap:8px; text-decoration:none; }
@@ -327,3 +327,25 @@ select, select.form-control { background:var(--background); color:var(--text); b
 .fa-details-table .detail-value pre { white-space:pre-wrap; overflow-wrap:anywhere; }
 .fa-details-table .detail-copy { position:static; flex-shrink:0; min-height:28px; height:28px; padding:4px 8px; border:1px solid var(--line); background:var(--surface); color:var(--muted); font:12px/18px var(--font-sans); text-transform:none; letter-spacing:0; }
 .fa-details-table .detail-copy:hover { background:var(--hover-surface); color:var(--text); }
+
+
+.cell-copy-toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 8px 14px;
+    border-radius: 4px;
+    background: #30342c;
+    color: #f5f6f2;
+    font-size: 12px;
+    box-shadow: 0 2px 8px #0002;
+    opacity: 0;
+    transition: opacity 150ms ease;
+    pointer-events: none;
+    z-index: 2000;
+}
+.cell-copy-toast.is-visible { opacity: 1; }
+@media (prefers-reduced-motion: reduce) {
+    .cell-copy-toast { transition: none; }
+}
