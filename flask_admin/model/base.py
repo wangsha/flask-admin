@@ -2128,13 +2128,15 @@ class BaseModelView(BaseView, ActionsMixin):
         :param name:
             Field name
         """
-        return self._get_list_value(
+        value = self._get_list_value(
             context,
             model,
             name,
             self.column_formatters,
             self.column_type_formatters,  # type: ignore[arg-type]
         )
+
+        return self._link_reference_value(model, name, value, self.column_formatters)
 
     @pass_context
     def get_detail_value(
@@ -2157,8 +2159,17 @@ class BaseModelView(BaseView, ActionsMixin):
             self.column_formatters_detail,  # type: ignore[arg-type]
             self.column_type_formatters_detail,  # type: ignore[arg-type]
         )
+        return self._link_reference_value(
+            model, name, value, self.column_formatters_detail
+        )
+
+    def _link_reference_value(
+        self, model: T_ORM_MODEL, name: str, value: t.Any,
+        formatters: T_COLUMN_FORMATTERS | None,
+    ) -> t.Any:
+        """Link registered, accessible model references in HTML views only."""
         # Explicit field formatters retain control of their own markup.
-        if name in self.column_formatters_detail or not self.admin:
+        if name in (formatters or {}) or not self.admin:
             return value
 
         reference = self._get_field_value(model, name)
@@ -2174,10 +2185,10 @@ class BaseModelView(BaseView, ActionsMixin):
                 ):
                     pk = view.get_pk_value(record)
                     if pk is not None:
-                        url = view.get_url(
-                            f"{view.endpoint}.details_view", id=pk
-                        )
-                        return Markup('<a class="detail-reference-link" href="{}">{}</a>').format(url, label)
+                        url = view.get_url(f"{view.endpoint}.details_view", id=pk)
+                        return Markup(
+                            '<a class="detail-reference-link" href="{}">{}</a>'
+                        ).format(url, label)
             return label
 
         if isinstance(reference, (list, tuple)):

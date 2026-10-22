@@ -368,7 +368,7 @@ select, select.form-control { background:var(--background); color:var(--text); b
 .model-list td:has(> .action-checkbox) { width:40px; text-align:center; vertical-align:top; padding-top:17px; line-height:0; }
 @media (forced-colors:active) { .model-list input[type="checkbox"] { appearance:auto; } .model-list input[type="checkbox"]::before { content:none; } }
 
-.fa-details-table .detail-reference-link { color:var(--text); text-decoration:underline; text-decoration-color:var(--muted); text-underline-offset:3px; text-decoration-thickness:1px; cursor:pointer; }
+.fa-details-table .detail-reference-link, .fa-details-table .detail-value a[href], .model-list td[class*="col-"] a[href]:not(.icon):not(.btn) { color:var(--text); text-decoration:underline; text-decoration-color:currentColor; text-underline-offset:3px; text-decoration-thickness:1px; cursor:pointer; }
 .fa-details-table .detail-reference-link::after { content:" →"; display:inline-block; margin-left:4px; text-decoration:none; }
-.fa-details-table .detail-reference-link:hover { color:var(--hover-text); text-decoration-color:currentColor; background:var(--hover-surface); }
-.fa-details-table .detail-reference-link:focus-visible { outline:2px solid var(--text); outline-offset:3px; }
+.fa-details-table .detail-reference-link:hover, .fa-details-table .detail-value a[href]:hover, .model-list td[class*="col-"] a[href]:not(.icon):not(.btn):hover { color:var(--hover-text); text-decoration-color:currentColor; background:var(--hover-surface); }
+.fa-details-table .detail-reference-link:focus-visible, .fa-details-table .detail-value a[href]:focus-visible, .model-list td[class*="col-"] a[href]:not(.icon):not(.btn):focus-visible { outline:2px solid var(--text); outline-offset:3px; }
