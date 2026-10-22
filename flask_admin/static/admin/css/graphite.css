@@ -284,7 +284,7 @@ select, select.form-control { background:var(--background); color:var(--text); b
 @media(max-width:991px) { .navbar { padding-right:120px; } .theme-toggle { position:absolute; right:0; top:20px; } .admin-mobile-brand { max-width:calc(100% - 250px); overflow:hidden; white-space:nowrap; font-size:14px; } }
 
 /* Roomy, consistent row actions without changing the table cell layout. */
-.model-list td.list-buttons-column { width:1%; padding:8px 10px; vertical-align:top; }
+.model-list td.list-buttons-column { width:1%; padding:8px 10px; vertical-align:top; line-height:0; }
 .model-list .list-buttons-column a.icon,
 .model-list .list-buttons-column form.icon button {
     display:inline-flex; align-items:center; justify-content:center; vertical-align:middle;
@@ -353,7 +353,7 @@ select, select.form-control { background:var(--background); color:var(--text); b
 /* Square native checkbox controls retain keyboard and form behavior. */
 .model-list input[type="checkbox"] {
     -webkit-appearance:none; appearance:none; display:inline-grid; place-content:center;
-    width:16px; height:16px; margin:0; vertical-align:middle; cursor:pointer;
+    width:14px; height:14px; margin:0; vertical-align:middle; cursor:pointer;
     border:1px solid var(--muted); border-radius:0; background:var(--surface); color:var(--background);
 }
 .model-list input[type="checkbox"]::before { content:""; width:8px; height:4px; border-left:2px solid currentColor; border-bottom:2px solid currentColor; transform:translateY(-1px) rotate(-45deg); visibility:hidden; }
@@ -365,7 +365,7 @@ select, select.form-control { background:var(--background); color:var(--text); b
 .model-list input[type="checkbox"]:focus-visible { outline:2px solid var(--text); outline-offset:3px; }
 .model-list input[type="checkbox"]:disabled { opacity:.45; cursor:default; }
 .model-list .list-checkbox-column { width:40px; text-align:center; }
-.model-list td:has(> .action-checkbox) { width:40px; text-align:center; vertical-align:top; padding-top:16px; }
+.model-list td:has(> .action-checkbox) { width:40px; text-align:center; vertical-align:top; padding-top:17px; line-height:0; }
 @media (forced-colors:active) { .model-list input[type="checkbox"] { appearance:auto; } .model-list input[type="checkbox"]::before { content:none; } }
 
 .fa-details-table .detail-reference-link { color:var(--text); text-decoration:underline; text-decoration-color:var(--muted); text-underline-offset:3px; text-decoration-thickness:1px; cursor:pointer; }
