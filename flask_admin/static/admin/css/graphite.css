@@ -282,3 +282,29 @@ select, select.form-control { background:var(--background); color:var(--text); b
 :root[data-theme="light"] .navbar-toggler-icon { filter:invert(1); }
 :root[data-theme="light"] .navbar-dark .navbar-toggler { border-color:var(--control-border); }
 @media(max-width:991px) { .navbar { padding-right:120px; } .theme-toggle { position:absolute; right:0; top:20px; } .admin-mobile-brand { max-width:calc(100% - 250px); overflow:hidden; white-space:nowrap; font-size:14px; } }
+
+/* Roomy, consistent row actions without changing the table cell layout. */
+.model-list td.list-buttons-column { width:1%; padding:8px 10px; vertical-align:middle; }
+.model-list .list-buttons-column a.icon,
+.model-list .list-buttons-column form.icon button {
+    display:inline-flex; align-items:center; justify-content:center; vertical-align:middle;
+    width:32px; height:32px; min-height:32px; padding:0; margin:0 4px 0 0;
+    border:1px solid transparent; border-radius:0; background:transparent;
+    color:var(--muted); font-size:15px; line-height:1; text-decoration:none;
+}
+.model-list .list-buttons-column a.icon:hover,
+.model-list .list-buttons-column form.icon button:hover {
+    background:var(--hover-surface); border-color:var(--line); color:var(--text);
+}
+.model-list .list-buttons-column a.icon:focus-visible,
+.model-list .list-buttons-column form.icon button:focus-visible { outline:2px solid var(--text); outline-offset:2px; }
+.model-list .list-buttons-column form.icon button { color:var(--error-text); }
+.model-list .list-buttons-column form.icon button:hover { color:var(--error-hover); }
+
+/* Separate pagination from the table while keeping the theme's square edges. */
+.pagination { display:flex; flex-wrap:wrap; align-items:center; gap:6px; margin:20px 0 8px; padding:0; }
+.pagination .page-link { display:flex; align-items:center; justify-content:center; min-width:38px; height:38px; margin:0; padding:8px 12px; font:14px/20px var(--font-sans); text-decoration:none; }
+.pagination .page-item.active .page-link { font-weight:600; }
+.pagination .page-item.disabled .page-link { opacity:.45; cursor:default; }
+.pagination .page-link:focus-visible { outline:2px solid var(--text); outline-offset:2px; box-shadow:none; }
+@media(max-width:575px) { .pagination { gap:4px; } .pagination .page-link { min-width:34px; height:36px; padding:7px 9px; } }
