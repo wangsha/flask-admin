@@ -2150,13 +2150,43 @@ class BaseModelView(BaseView, ActionsMixin):
         :param name:
             Field name
         """
-        return self._get_list_value(
+        value = self._get_list_value(
             context,
             model,
             name,
             self.column_formatters_detail,  # type: ignore[arg-type]
             self.column_type_formatters_detail,  # type: ignore[arg-type]
         )
+        # Explicit field formatters retain control of their own markup.
+        if name in self.column_formatters_detail or not self.admin:
+            return value
+
+        reference = self._get_field_value(model, name)
+
+        def reference_link(record: t.Any, label: t.Any) -> t.Any:
+            for view in self.admin._views:
+                target_model = getattr(view, "model", None)
+                if (
+                    isinstance(target_model, type)
+                    and isinstance(record, target_model)
+                    and getattr(view, "can_view_details", False)
+                    and view.is_accessible()
+                ):
+                    pk = view.get_pk_value(record)
+                    if pk is not None:
+                        url = view.get_url(
+                            f"{view.endpoint}.details_view", id=pk
+                        )
+                        return Markup('<a href="{}">{}</a>').format(url, label)
+            return label
+
+        if isinstance(reference, (list, tuple)):
+            # Only replace collection formatting when it contains model records.
+            linked = [reference_link(record, str(record)) for record in reference]
+            if any(isinstance(item, Markup) for item in linked):
+                return Markup(", ").join(linked)
+            return value
+        return reference_link(reference, value)
 
     def get_export_value(self, model: T_ORM_MODEL, name: T_COLUMN) -> t.Any:
         """

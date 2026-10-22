@@ -346,3 +346,6 @@ select, select.form-control { background:var(--background); color:var(--text); b
 @media (prefers-reduced-motion: reduce) {
     .cell-copy-toast { transition: none; }
 }
+
+/* Hide obsolete copy controls when a cached detail template is still served. */
+.fa-details-table .detail-copy, .fa-details-table [data-detail-copy] { display:none!important; }
