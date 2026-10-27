@@ -97,8 +97,12 @@
     <script {{ admin_csp_nonce_attribute }} src="{{ admin_static.url(filename='vendor/moment.min.js', v='2.9.4') }}" type="text/javascript"></script>
     <script {{ admin_csp_nonce_attribute }} src="{{ admin_static.url(filename='vendor/bootstrap4/util.js', v='4.3.1') }}" type="text/javascript"></script>
     <script {{ admin_csp_nonce_attribute }} src="{{ admin_static.url(filename='vendor/bootstrap4/dropdown.js', v='4.3.1') }}" type="text/javascript"></script>
-    <script {{ admin_csp_nonce_attribute }} src="{{ admin_static.url(filename='vendor/select2/select2.min.js', v='4.2.1') }}"
+    {# Full build: x-editable's select2 input still binds to a hidden <input>, which needs the compat modules. #}
+    <script {{ admin_csp_nonce_attribute }} src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.full.min.js"
             type="text/javascript"></script>
+    {% if 'admin/css/graphite.css' not in theme.stylesheets|default(()) %}
+    <script {{ admin_csp_nonce_attribute }} type="text/javascript">jQuery.fn.select2.defaults.set('theme', 'bootstrap4');</script>
+    {% endif %}
     <script {{ admin_csp_nonce_attribute }} src="{{ admin_static.url(filename='vendor/multi-level-dropdowns-bootstrap/bootstrap4-dropdown-ml-hack.js') }}" type="text/javascript"></script>
     <script {{ admin_csp_nonce_attribute }} src="{{ admin_static.url(filename='admin/js/helpers.js', v='1.0.0') }}" type="text/javascript"></script>
     {% if admin_view.extra_js %}

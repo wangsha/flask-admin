@@ -247,7 +247,7 @@ class Select2TagsField(fields.StringField):
             entrylist = valuelist[0]
             if self.allow_duplicates and entrylist.endswith(" "):
                 # This means this is an allowed duplicate (see form.js,
-                # `createSearchChoice`), so its ID was modified. Hence, we need to
+                # `createTag`), so its ID was modified. Hence, we need to
                 # restore the original IDs.
                 entrylist = re.sub(self._strip_regex, "\\1", entrylist)
             if self.save_as_list:

@@ -87,10 +87,6 @@ body > .container, body > .container-fluid { position:relative; padding:0 4vw 48
 .page-item.active .page-link { background:var(--text); color:var(--background); border-color:var(--text); }
 .page-item.disabled .page-link { background:var(--background); color:var(--muted); border-color:var(--line); }
 .page-link:hover { background:var(--hover-surface); color:var(--text); border-color:var(--line); }
-.select2-container .select2-choice,.select2-container-multi .select2-choices,.select2-drop { background:var(--background); color:var(--text); border-color:var(--control-border); border-radius:0; }
-.select2-container .select2-choice .select2-arrow,.select2-container-multi .select2-choices .select2-search-choice { background:var(--control-surface); color:var(--text); border-color:var(--line); }
-.select2-results .select2-highlighted { background:var(--selection); color:var(--text); }
-.select2-search input,.select2-container-multi .select2-choices .select2-search-field input { color:var(--text); background:var(--background)!important; }
 .close { color:var(--text); text-shadow:none; }
 .alert-dismissible { position:relative; padding-right:58px; overflow-wrap:anywhere; }
 .alert-dismissible .close {
@@ -126,7 +122,6 @@ input.btn { width: auto !important; min-height: 32px !important; }
 input.form-control, select.form-control { min-height: 38px; }
 input[type="checkbox"], input[type="radio"] { accent-color: #b7bba0; }
 hr { border-color: var(--line); }
-.select2-container .select2-choice { min-height: 32px; }
 
 /* Match native, Select2 and submit controls to the dark admin surface. */
 input.btn, .submit-row .btn, .form-group .btn {
@@ -136,29 +131,34 @@ input.btn, .submit-row .btn, .form-group .btn {
 }
 .submit-row { display:flex; flex-wrap:wrap; align-items:center; gap:8px; }
 select, select.form-control { background:var(--background); color:var(--text); border:1px solid var(--control-border); border-radius:0; }
-.select2-container .select2-choice, .select2-container .select2-choices,
-.select2-container--default .select2-selection--single, .select2-container--default .select2-selection--multiple {
-    background:var(--background)!important; background-image:none!important; color:var(--text)!important;
-    border:1px solid var(--control-border)!important; border-radius:0!important; box-shadow:none!important;
-    min-height:38px; font-size:14px;
+/* Select2 4, default theme. select2.css loads after this file, so these rules lead with :root to win ties. */
+:root .select2-container--default .select2-selection--single,
+:root .select2-container--default .select2-selection--multiple {
+    min-height:38px; background:var(--background); color:var(--text);
+    border:1px solid var(--control-border); border-radius:0; box-shadow:none; font-size:14px;
 }
-.select2-container .select2-choice { line-height:36px; }
-.select2-container .select2-choice .select2-arrow { background:var(--surface)!important; background-image:none!important; border-color:var(--control-border)!important; border-radius:0!important; }
-.select2-drop, .select2-drop-active, .select2-dropdown {
-    background:var(--surface)!important; color:var(--text)!important; border:1px solid var(--control-border)!important; border-radius:0!important; box-shadow:none!important;
-}
-.select2-results .select2-no-results, .select2-results .select2-searching,
-.select2-results .select2-selection-limit, .select2-results__option {
-    background:var(--surface)!important; color:var(--muted)!important;
-}
-.select2-results .select2-highlighted, .select2-results__option--highlighted[aria-selected] {
-    background:var(--hover-surface)!important; color:var(--text)!important;
-}
-.select2-container--default .select2-selection--single .select2-selection__rendered { color:var(--text); line-height:36px; }
-.select2-container--default .select2-selection--single .select2-selection__arrow { height:36px; }
-.select2-search input, .select2-search__field { background-color:var(--background)!important; color:var(--text)!important; border-color:var(--control-border)!important; font-size:14px; min-height:36px!important; }
-.select2-container-active .select2-choice, .select2-container-active .select2-choices,
-.select2-container--focus .select2-selection { border-color:var(--muted)!important; box-shadow:none!important; }
+:root .select2-container--default .select2-selection--single { height:38px; }
+:root .select2-container--default .select2-selection--single .select2-selection__rendered { padding-left:12px; padding-right:32px; color:var(--text); line-height:36px; }
+:root .select2-container--default .select2-selection--single .select2-selection__placeholder { color:var(--placeholder); }
+:root .select2-container--default .select2-selection--single .select2-selection__arrow { top:0; right:0; width:28px; height:36px; }
+:root .select2-container--default .select2-selection--single .select2-selection__arrow b { border-color:var(--muted) transparent transparent; border-width:5px 5px 0; margin-left:-5px; }
+:root .select2-container--default.select2-container--open .select2-selection--single .select2-selection__arrow b { border-color:transparent transparent var(--muted); border-width:0 5px 5px; }
+:root .select2-container--default .select2-selection__clear { color:var(--muted); }
+/* Block (not inline-block) list so no line-box gap pads the box; 5px + 26px chip + 5px centres chips in the 36px inner height. */
+:root .select2-container--default .select2-selection--multiple .select2-selection__rendered { display:block; padding:0 6px 5px; }
+:root .select2-container--default .select2-selection--multiple .select2-selection__choice { margin:5px 6px 0 0; padding:2px 8px; background:var(--control-surface); color:var(--text); border:1px solid var(--line); border-radius:0; }
+:root .select2-container--default .select2-selection--multiple .select2-selection__choice__remove { margin-right:6px; color:var(--muted); }
+:root .select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover { color:var(--error-hover); }
+:root .select2-container--default.select2-container--focus .select2-selection--multiple,
+:root .select2-container--default.select2-container--open .select2-selection { border-color:var(--muted); }
+:root .select2-container--default .select2-dropdown { background:var(--surface); color:var(--text); border-color:var(--control-border); border-radius:0; box-shadow:none; }
+:root .select2-container--default .select2-results__option { color:var(--muted); }
+:root .select2-container--default .select2-results__option[aria-selected=true] { background:var(--selection); color:var(--text); }
+:root .select2-container--default .select2-results__option--highlighted[aria-selected] { background:var(--hover-surface); color:var(--text); }
+:root .select2-container--default .select2-search--dropdown .select2-search__field { min-height:36px; padding:6px 10px; background:var(--background); color:var(--text); border:1px solid var(--control-border); border-radius:0; font-size:14px; }
+:root .select2-container--default .select2-search--inline .select2-search__field { height:20px; min-height:0; margin-top:8px; padding:0; background:transparent; color:var(--text); border:0; font-size:14px; line-height:20px; }
+/* Inline list editors: save/cancel match the 38px control so both sit on one row. */
+.editableform .editable-buttons .btn { height:38px; min-height:38px!important; }
 .filter .select2-container, .filter input, .filter select { vertical-align:middle; }
 
 /* Date and time filters use Date Range Picker, including its legacy markup. */
@@ -229,13 +229,10 @@ select, select.form-control { background:var(--background); color:var(--text); b
 #filter_form .remove-filter { text-transform:none; letter-spacing:0; font-family:inherit; font-size:14px; }
 #filter_form .filter-val:not(.select2-container),
 #filter_form .filter-op:not(.select2-container) { width:220px; min-height:40px; height:40px; padding:8px 12px; font-size:14px; }
-#filter_form .select2-container { min-width:150px; max-width:100%; height:40px; min-height:40px; padding:0; vertical-align:middle; }
-#filter_form .select2-choice { display:flex; align-items:center; height:40px; min-height:40px; line-height:20px; padding:0 34px 0 12px; font-size:14px; }
-#filter_form .select2-choice > .select2-chosen { display:block; min-width:0; margin:0; padding:0; line-height:20px; }
-#filter_form .select2-arrow { width:26px; display:flex; align-items:center; justify-content:center; }
-/* Use one centered arrow instead of a repeating legacy image sprite. */
-#filter_form .select2-arrow b { display:block; width:0; height:0; background:none !important; border:5px solid transparent; border-bottom:0; border-top-color:var(--muted); }
-#filter_form .select2-dropdown-open .select2-arrow b { transform:rotate(180deg); }
+#filter_form .select2-container { min-width:150px; max-width:100%; vertical-align:middle; }
+:root #filter_form .select2-container--default .select2-selection--single { height:40px; min-height:40px; }
+:root #filter_form .select2-container--default .select2-selection--single .select2-selection__rendered { line-height:38px; }
+:root #filter_form .select2-container--default .select2-selection--single .select2-selection__arrow { height:38px; }
 
 @media (max-width:700px) {
     #filter_form .filters { width:100%; }
@@ -266,14 +263,16 @@ select, select.form-control { background:var(--background); color:var(--text); b
 .admin-form .submit-row input.btn-primary { background:var(--text); color:var(--background); border-color:var(--text); }
 .admin-form .submit-row .btn-danger { background:transparent; color:var(--muted); border-color:var(--button-border); }
 .admin-form .submit-row .btn:hover { background:var(--hover-surface); color:var(--text); }
-.admin-form .select2-container .select2-choice { display:flex; align-items:center; height:40px; min-height:40px; padding:0 36px 0 12px; font:14px/20px var(--font-sans); }
-.admin-form .select2-container .select2-choice > .select2-chosen { display:block; min-width:0; margin:0; padding:0; line-height:20px; }
-.admin-form .select2-container .select2-choice .select2-arrow { width:28px; display:flex; align-items:center; justify-content:center; }
-.admin-form .select2-container .select2-choice .select2-arrow b { width:0; height:0; background:none!important; border:5px solid transparent; border-bottom:0; border-top-color:var(--muted); }
-.admin-form .select2-dropdown-open .select2-choice .select2-arrow b { transform:rotate(180deg); }
-.graphite-form-dropdown .select2-results { margin:4px; padding:0; max-height:240px; font:14px/1.5 var(--font-sans); }
-.graphite-form-dropdown .select2-results .select2-result-label { padding:8px 12px; }
-.graphite-form-dropdown .select2-results .select2-highlighted { background:var(--hover-surface); color:var(--text); }
+:root .admin-form .select2-container--default .select2-selection--single { height:40px; min-height:40px; }
+:root .admin-form .select2-container--default .select2-selection--single .select2-selection__rendered { padding-right:36px; font:14px/38px var(--font-sans); }
+:root .admin-form .select2-container--default .select2-selection--single .select2-selection__arrow { height:38px; }
+:root .admin-form .select2-container--default .select2-selection--multiple { min-height:40px; }
+:root .admin-form .select2-container--default .select2-selection--multiple .select2-selection__rendered { padding-bottom:6px; }
+:root .admin-form .select2-container--default .select2-selection--multiple .select2-selection__choice { margin-top:6px; }
+:root .admin-form .select2-container--default .select2-search--inline .select2-search__field { margin-top:9px; }
+/* graphite.js adds this class to plain form selects' dropdowns, which Select2 appends to <body>. */
+:root .graphite-form-dropdown .select2-results > .select2-results__options { margin:4px; padding:0; max-height:240px; font:14px/1.5 var(--font-sans); }
+.graphite-form-dropdown .select2-results__option { padding:8px 12px; }
 
 /* Bootstrap's bg-light utility also applies to dynamically added inline rows. */
 .admin-form .inline-field.card.bg-light { background:var(--surface, #191c18)!important; color:var(--text); border:1px solid var(--line); border-radius:4px; padding:16px; }

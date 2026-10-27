@@ -4,70 +4,75 @@
       var fieldConverters = [];
 
       /**
+      * Select2 4 only binds to <select>. Insert a proxy <select> after a text or
+      * hidden input; the input keeps its name, and every change writes the
+      * selected ids back to it, joined by `separator`, so the posted value and
+      * the input's change events stay what the server and page scripts expect.
+      */
+      function createProxySelect($input, multiple, separator) {
+        var $select = $('<select/>').prop('multiple', multiple).insertAfter($input);
+
+        if ($input.hasClass('form-control'))
+          $select.addClass('form-control');
+
+        $input.hide();
+        $select.on('change', function() {
+          var value = $select.val();
+          $input.val(multiple ? (value || []).join(separator) : (value || ''));
+          $input.trigger('change');
+        });
+        return $select;
+      }
+
+      /**
       * Process AJAX fk-widget
       */
       function processAjaxWidget($el, name) {
         var multiple = $el.attr('data-multiple') == '1';
+        var $select = createProxySelect($el, multiple, $el.attr('data-separator') || ',');
 
-        var opts = {
+        // data-json holds [id, text] for a single value, or a list of them.
+        var selected = JSON.parse($el.attr('data-json') || 'null') || [];
+        if (!multiple) {
+          // A blank first option lets Select2 show the placeholder.
+          $select.append(new Option('', '', false, false));
+          selected = selected.length ? [selected] : [];
+        }
+        $.each(selected, function(i, v) {
+          $select.append(new Option(v[1], v[0], true, true));
+        });
+
+        $select.select2({
           width: 'resolve',
           minimumInputLength: $el.attr('data-minimum-input-length'),
-          placeholder: 'data-placeholder',
-          separator: $el.attr('data-separator'),
+          placeholder: $el.attr('data-placeholder') || '',
+          allowClear: !!$el.attr('data-allow-blank'),
+          multiple: multiple,
           ajax: {
             url: $el.attr('data-url'),
-            data: function(term, page) {
+            dataType: 'json',
+            delay: 250,
+            data: function(params) {
+              var page = params.page || 1;
+
               return {
-                query: term,
+                query: params.term || '',
                 offset: (page - 1) * 10,
                 limit: 10
               };
             },
-            results: function(data, page) {
-              var results = [];
-
-              for (var k in data) {
-                var v = data[k];
-
-                results.push({id: v[0], text: v[1]});
-              }
+            processResults: function(data) {
+              var results = $.map(data, function(v) {
+                return {id: v[0], text: v[1]};
+              });
 
               return {
                 results: results,
-                more: results.length == 10
+                pagination: {more: results.length == 10}
               };
             }
-          },
-          initSelection: function(element, callback) {
-            $el = $(element);
-            var value = JSON.parse($el.attr('data-json'));
-            var result = null;
-
-            if (value) {
-              if (multiple) {
-                result = [];
-
-                for (var k in value) {
-                  var v = value[k];
-                  result.push({id: v[0], text: v[1]});
-                }
-
-                callback(result);
-              } else {
-                result = {id: value[0], text: value[1]};
-              }
-            }
-
-            callback(result);
           }
-        };
-
-        if ($el.attr('data-allow-blank'))
-          opts['allowClear'] = true;
-
-        opts['multiple'] = multiple;
-
-        $el.select2(opts);
+        });
       }
 
       /**
@@ -299,15 +304,18 @@
                     width: 'resolve'
                 };
 
-                if ($el.attr('data-allow-blank'))
+                if ($el.attr('data-allow-blank')) {
+                    // Select2Field and QuerySelectField post '__None' for an empty choice.
                     opts['allowClear'] = true;
+                    opts['placeholder'] = {id: '__None', text: ''};
+                }
 
                 opts['minimumInputLength'] = $el.attr('data-minimum-input-length');
 
                 if ($el.attr('data-tags')) {
                     $.extend(opts, {
                         tokenSeparators: [','],
-                        tags: []
+                        tags: true
                     });
                 }
 
@@ -324,7 +332,7 @@
                 // default to a comma for separating list items
                 // allows using spaces as a token separator
                 if ($el.attr('data-token-separators')) {
-                    var tokenSeparators = JSON.parse($el.attr('data-tags'));
+                    var tokenSeparators = JSON.parse($el.attr('data-token-separators'));
                 } else {
                     var tokenSeparators = [','];
                 }
@@ -335,36 +343,65 @@
                     var allowDuplicateTags = false;
                 }
 
+                // The server always joins tags with ',' (Select2TagsField._value).
+                var $select = createProxySelect($el, true, ',');
+                var current = $.grep(($el.val() || '').split(','), function(tag) {
+                    return $.trim(tag) !== '';
+                });
+                current = $.map(current, $.trim);
+
+                // Predefined tags are strings (form fields) or {id, text} (list filters).
+                $.each(tags, function(i, tag) {
+                    var id = (tag === Object(tag)) ? tag.id : tag;
+                    var text = (tag === Object(tag)) ? tag.text : tag;
+                    var isSelected = $.inArray(String(id), current) !== -1;
+                    $select.append(new Option(text, id, isSelected, isSelected));
+                });
+                $.each(current, function(i, tag) {
+                    if (!$select.find('option').filter(function() { return this.value === tag; }).length)
+                        $select.append(new Option(tag, tag, true, true));
+                });
+
+                var opts = {
+                    width: 'resolve',
+                    tags: true,
+                    tokenSeparators: tokenSeparators,
+                    language: {
+                        noResults: function() {
+                            return 'Enter comma separated values';
+                        }
+                    }
+                };
+
                 if (allowDuplicateTags) {
                     // To allow duplicate tags, we need to have a unique ID for each entry.
                     // The easiest way to do this is appending the current Unix timestamp.
                     // However, this causes the ID to change (the ID is what flask-admin receives later on).
                     // We separate the date with a '#' and put a space at the end of the ID
                     // (something the user can't do due to 'trim') to specially mark these entries.
-                    var createSearchChoice = function (term) {
+                    opts.createTag = function(params) {
+                        var term = $.trim(params.term);
+                        if (term === '')
+                            return null;
+
                         return {
-                            id: $.trim(term) + "#" + new Date().getTime() + " ",
-                            text: $.trim(term)
+                            id: term + "#" + new Date().getTime() + " ",
+                            text: term
                         };
                     };
-                } else {
-                    var createSearchChoice = undefined;
+                    // Select2 4 reuses an existing option whose text matches the term instead
+                    // of creating a tag, so hide selected options to let a duplicate be created.
+                    opts.matcher = function(params, data) {
+                        if (data.selected)
+                            return null;
+                        return $.fn.select2.defaults.defaults.matcher(params, data);
+                    };
                 }
 
-                var opts = {
-                    width: 'resolve',
-                    tags: tags,
-                    tokenSeparators: tokenSeparators,
-                    createSearchChoice: createSearchChoice,
-                    formatNoMatches: function() {
-                        return 'Enter comma separated values';
-                    }
-                };
-
-                $el.select2(opts);
+                $select.select2(opts);
 
                 // submit on ENTER
-                $el.parent().find('input.select2-input').on('keyup', function(e) {
+                $select.next('.select2-container').on('keyup', '.select2-search__field', function(e) {
                    if(e.keyCode === 13)
                       $(this).closest('form').submit();
                 });
@@ -500,6 +537,16 @@
                 });
                 return true;
             case 'x-editable-select2-multiple':
+                // x-editable 1.5 reads select2('val') as Select2 3's array; Select2 4 returns
+                // the hidden input's joined string (with a leading separator after the first pick).
+                $.fn.editabletypes.select2.prototype.input2value = function() {
+                    var value = this.$input.val() || '';
+                    if (!this.isMultiple)
+                        return value;
+                    return $.grep(value.split(this.getSeparator()), function(id) {
+                        return id !== '';
+                    });
+                };
                 $el.editable({
                     params: overrideXeditableParams,
                     ajaxOptions: {
@@ -507,7 +554,10 @@
                         traditional: true
                     },
                     select2: {
-                        multiple: true
+                        multiple: true,
+                        // x-editable's getSeparator() falls back to $.fn.select2.defaults.separator,
+                        // which Select2 4 no longer has; without this, '2,3' is never split.
+                        separator: ','
                     },
                     display: function(value) {
                         // override to display text instead of ids on list view
