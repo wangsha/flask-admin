@@ -211,8 +211,8 @@ select, select.form-control { background:var(--background); color:var(--text); b
     padding:8px 12px; flex:1 1 auto; font-size:13px;
 }
 .admin-search-form .btn { flex:0 0 auto; min-height:36px; height:36px; margin:0!important; padding:8px 14px; }
-.admin-search-form .input-group-append { align-self:stretch; }
-.admin-search-form .input-group-text { padding:6px 10px; }
+.admin-search-form .input-group-append { margin:0; }
+.admin-search-form .input-group-text { justify-content:center; width:36px; height:36px; padding:0; }
 @media(max-width:575px) {
     .nav-tabs > li:has(.admin-search-form) { width:100%; margin:8px 0!important; }
     .admin-search-form > .form-inline { width:100%; }
