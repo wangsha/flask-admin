@@ -401,7 +401,9 @@ select, select.form-control { background:var(--background); color:var(--text); b
 .model-list input[type="checkbox"]:focus-visible { outline:2px solid var(--text); outline-offset:3px; }
 .model-list input[type="checkbox"]:disabled { opacity:.45; cursor:default; }
 .model-list .list-checkbox-column { width:40px; text-align:center; }
-.model-list td:has(> .action-checkbox) { width:40px; text-align:center; vertical-align:top; padding-top:17px; line-height:0; }
+/* Centre the checkbox (15px + 7px) on the same 22px line as the row action icons (8px + 14px). */
+.model-list td:has(> .action-checkbox) { width:40px; text-align:center; vertical-align:top; padding-top:15px; font-size:0; line-height:0; }
+.model-list input.action-checkbox { vertical-align:top; }
 @media (forced-colors:active) { .model-list input[type="checkbox"] { appearance:auto; } .model-list input[type="checkbox"]::before { content:none; } }
 
 .fa-details-table .detail-reference-link, .fa-details-table .detail-value a[href], .model-list td[class*="col-"] a[href]:not(.icon):not(.btn) { color:var(--text); text-decoration:underline; text-decoration-color:currentColor; text-underline-offset:3px; text-decoration-thickness:1px; cursor:pointer; }
