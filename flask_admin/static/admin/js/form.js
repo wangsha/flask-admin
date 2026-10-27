@@ -25,6 +25,20 @@
       }
 
       /**
+      * Bootstrap modals pull focus back from anything outside them, and Select2
+      * appends its dropdown to <body>, so its search box can't keep focus in a
+      * modal form. Attach the dropdown to .modal-content instead: it is inside
+      * the modal and scrolls with the form, whereas positioning against the
+      * scrolled, fixed .modal itself puts the dropdown over the field.
+      */
+      function withModalParent($el, opts) {
+        var $content = $el.closest('.modal-content');
+        if ($content.length)
+          opts.dropdownParent = $content;
+        return opts;
+      }
+
+      /**
       * Process AJAX fk-widget
       */
       function processAjaxWidget($el, name) {
@@ -42,7 +56,7 @@
           $select.append(new Option(v[1], v[0], true, true));
         });
 
-        $select.select2({
+        $select.select2(withModalParent($el, {
           width: 'resolve',
           minimumInputLength: $el.attr('data-minimum-input-length'),
           placeholder: $el.attr('data-placeholder') || '',
@@ -72,7 +86,7 @@
               };
             }
           }
-        });
+        }));
       }
 
       /**
@@ -319,7 +333,7 @@
                     });
                 }
 
-                $el.select2(opts);
+                $el.select2(withModalParent($el, opts));
                 return true;
             case 'select2-tags':
                 // get tags from element
@@ -398,7 +412,7 @@
                     };
                 }
 
-                $select.select2(opts);
+                $select.select2(withModalParent($el, opts));
 
                 // submit on ENTER
                 $select.next('.select2-container').on('keyup', '.select2-search__field', function(e) {

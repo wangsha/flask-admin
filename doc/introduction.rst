@@ -62,9 +62,9 @@ Alternatively, you could use the :meth:`~flask_admin.base.Admin.init_app` method
 If you start this application and navigate to `http://localhost:5000/admin/ <http://localhost:5000/admin/>`_,
 you should see an empty page with a navigation bar on top. Customize the look
 with a Bootswatch theme (see https://bootswatch.com/4/ for previews). In this
-slim fork Bootstrap and Bootswatch assets are served from the existing pinned
-jsDelivr release rather than bundled locally. Existing swatch names remain
-supported, including ``default``, ``simplex``, ``cerulean``, and ``cosmo``.
+slim fork Bootstrap 4.6.2 and Bootswatch 4.6.2 are served from jsDelivr's npm
+mirror rather than bundled locally. Existing swatch names remain supported,
+including ``default``, ``simplex``, ``cerulean``, and ``cosmo``.
 
 
 
@@ -772,9 +772,11 @@ select ``Bootstrap4Theme()``.
 Bundled asset size
 ------------------
 
-This slim fork serves Bootstrap 4, Bootswatch, and vendor CSS/JavaScript through
-``admin/static.html`` using the pinned jsDelivr upstream release. Bootstrap's
-local stylesheets, scripts, and source maps are therefore not bundled. The
+This slim fork loads Bootstrap 4.6.2, Bootswatch 4.6.2, Popper 1.16.1, jQuery
+3.7.1, and Select2 4.0.13 from jsDelivr's npm mirror. Other vendor CSS/JavaScript
+is served through ``admin/static.html`` from the pinned jsDelivr upstream
+release. Bootstrap's local stylesheets, scripts, and source maps are therefore
+not bundled. The
 Graphite theme and Flask-Admin's own CSS/JavaScript remain local. An internet
 connection to jsDelivr is required for Bootstrap and vendor assets, as before
 this cleanup.
