@@ -51,12 +51,10 @@ class GraphiteTheme(BootstrapTheme):
 
     Font Awesome is not loaded: ``graphite.css`` draws the icons the built-in
     templates use. It is still loaded when a menu item uses
-    ``menu_icon_type="fa"``. Pass ``font_awesome=True`` if custom row actions
-    or templates rely on other ``fa-*`` icons.
+    ``menu_icon_type="fa"``.
     """
 
     folder: typing.Literal["bootstrap4"] = "bootstrap4"
     base_template: str = "admin/graphite_base.html"
     fluid: bool = True
     stylesheets: tuple[str, ...] = ("admin/css/graphite.css",)
-    font_awesome: bool = False
