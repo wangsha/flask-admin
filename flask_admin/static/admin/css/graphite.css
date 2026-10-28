@@ -424,3 +424,24 @@ select, select.form-control { background:var(--background); color:var(--text); b
 .fa-details-table .detail-reference-link::after { content:" →"; display:inline-block; margin-left:4px; text-decoration:none; }
 .fa-details-table .detail-reference-link:hover, .fa-details-table .detail-value a[href]:hover, .model-list td[class*="col-"] a[href]:not(.icon):not(.btn):hover { color:var(--hover-text); text-decoration-color:currentColor; background:var(--hover-surface); }
 .fa-details-table .detail-reference-link:focus-visible, .fa-details-table .detail-value a[href]:focus-visible, .model-list td[class*="col-"] a[href]:not(.icon):not(.btn):focus-visible { outline:2px solid var(--text); outline-offset:3px; }
+
+/* Sentence case throughout; the active section is marked by an underline rather than case. */
+.navbar-dark .navbar-nav .nav-link, .admin-workspace-link, .btn, .btn-sm, button, .button { text-transform:none; letter-spacing:0; }
+.navbar-dark .navbar-nav .nav-link { font-size:13px; }
+.navbar-dark .navbar-nav .active>.nav-link { text-decoration:underline; text-decoration-thickness:1px; text-underline-offset:8px; }
+/* The theme toggle shares the brand mark's outline instead of a filled surface. */
+.theme-toggle, .theme-toggle:hover { background:transparent; border-color:var(--text); }
+/* An empty filter form keeps no margin, so the table sits directly under the tabs. */
+#filter_form:not(:has(tr)) { margin-bottom:0; }
+/* Cancel leaves the form, so it reads as a link beside the save actions. */
+.admin-form .submit-row a.btn-danger { background:transparent; border-color:transparent; color:var(--muted); text-decoration:underline; text-underline-offset:4px; }
+.admin-form .submit-row a.btn-danger:hover { color:var(--text); }
+.model-list .fa-minus-circle { color:var(--muted); }
+.site-mark { flex-shrink:0; }
+@media(max-width:575px) {
+    .admin-mobile-brand { letter-spacing:.04em; max-width:calc(100% - 4vw - 140px); text-overflow:ellipsis; }
+    .navbar { padding-right:56px; }
+    /* Icon-only toggle on phones; the accessible name stays on aria-label. */
+    .theme-toggle { width:36px; padding:0; justify-content:center; font-size:0; gap:0; }
+    .theme-toggle::before { content:""; width:14px; height:14px; border:1px solid currentColor; border-radius:50%; background:linear-gradient(90deg, currentColor 50%, transparent 50%); }
+}

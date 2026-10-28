@@ -41,7 +41,7 @@ def bool_formatter(view: T_MODEL_VIEW, value: t.Any, name: str) -> str:
     label = f'{name}: {"true" if value else "false"}'
     return Markup(
         f'<span class="fa {fa} glyphicon glyphicon-{glyph} '
-        f'icon-{glyph}" title="{label}"></span>'
+        f'icon-{glyph}" role="img" title="{label}" aria-label="{label}"></span>'
     )
 
 
