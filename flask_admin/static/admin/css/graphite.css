@@ -645,3 +645,21 @@ select, select.form-control { background:var(--background); color:var(--text); b
 @media(max-width:575px) { .nav-tabs { column-gap:18px; } }
 /* Less dead space between the header rule and the page title row. */
 .navbar { margin-bottom:24px!important; }
+
+/* Top-menu dropdowns: an open menu already shows where focus is, so drop the heavy focus box; keyboard focus elsewhere gets a light 1px ring. */
+.navbar .nav-link:focus-visible { outline:1px solid var(--muted); outline-offset:2px; }
+.navbar .show > .nav-link:focus,
+.navbar .show > .nav-link:focus-visible { outline:none; }
+/* Menu matches the tab dropdowns: hugs its items, starts flush with the menu label, soft shadow instead of a heavy frame. */
+.navbar .dropdown-menu { min-width:180px; margin-top:4px; padding:4px; border-color:var(--control-border); box-shadow:0 8px 24px rgba(0,0,0,.35); }
+:root[data-theme="light"] .navbar .dropdown-menu { box-shadow:0 8px 24px rgba(39,44,35,.12); }
+.navbar .dropdown-menu .dropdown-item { padding:8px 8px; font-size:13px; line-height:1.3; }
+@media(min-width:992px) { .navbar .dropdown-menu { margin-left:4px; } }
+
+/* Search-field clear button: a thin drawn × in the muted ink instead of Safari's filled grey disc. */
+input[type="search"]::-webkit-search-cancel-button {
+    -webkit-appearance:none; appearance:none; width:12px; height:12px; margin-left:6px; cursor:pointer; opacity:.7;
+    background:linear-gradient(45deg, transparent 45%, var(--muted) 45%, var(--muted) 55%, transparent 55%),
+               linear-gradient(-45deg, transparent 45%, var(--muted) 45%, var(--muted) 55%, transparent 55%);
+}
+input[type="search"]::-webkit-search-cancel-button:hover { opacity:1; }
