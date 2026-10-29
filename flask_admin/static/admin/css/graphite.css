@@ -449,3 +449,19 @@ select, select.form-control { background:var(--background); color:var(--text); b
     .theme-toggle { width:36px; padding:0; justify-content:center; font-size:0; gap:0; }
     .theme-toggle::before { content:""; width:14px; height:14px; border:1px solid currentColor; border-radius:50%; background:linear-gradient(90deg, currentColor 50%, transparent 50%); }
 }
+
+/* Selection and row actions read as one control strip: tight gutters, no rule between them, aligned to the first text line. */
+.model-list th.list-checkbox-column,
+.model-list td.list-checkbox-column { width:1%; padding:14px 4px 0 12px; vertical-align:top; line-height:0; }
+.model-list thead th.list-checkbox-column { padding-top:0; padding-bottom:0; vertical-align:middle; }
+.model-list .list-checkbox-column + .list-buttons-column,
+.model-list .list-checkbox-column + th { border-left:0; }
+.model-list .list-checkbox-column { border-right:0; }
+.model-list td.list-buttons-column { padding:7px 8px 7px 4px; }
+
+/* Row actions: smaller icon-only toolbar that stays quiet until the row is hovered or focused. */
+.model-list .list-buttons-column a.icon,
+.model-list .list-buttons-column form.icon button { width:24px; height:24px; min-height:24px; color:var(--placeholder); }
+.model-list .list-buttons-column .icon + .icon { margin-left:0; }
+.model-list .list-buttons-column .row-action-icon { width:16px; height:16px; }
+.model-list td.list-buttons-column { padding-top:9px; padding-bottom:9px; }
