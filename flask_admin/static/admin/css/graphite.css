@@ -65,7 +65,11 @@ body > .container, body > .container-fluid { position:relative; padding:0 4vw 48
 .table-striped tbody tr:nth-of-type(odd) { background:var(--surface); }
 .table-hover tbody tr:hover { background:var(--control-surface); color:var(--text); }
 .table-responsive { border:1px solid var(--line); }
-.table-responsive > .model-list { margin-bottom:0; }
+.table-responsive > .model-list { margin-bottom:0; border:0; }
+.table-responsive > .model-list tr > :first-child { border-left:0; }
+.table-responsive > .model-list tr > :last-child { border-right:0; }
+.table-responsive > .model-list thead th { border-top:0; }
+.table-responsive > .model-list tbody tr:last-child td { border-bottom:0; }
 .model-list .model-list-empty td { padding:48px 24px; color:var(--muted); text-align:center; white-space:normal; }
 .model-list.table-hover tbody tr.model-list-empty:hover { background:var(--surface); }
 .table a { color:var(--text); }
