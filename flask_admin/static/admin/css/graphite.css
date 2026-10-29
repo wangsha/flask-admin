@@ -465,3 +465,45 @@ select, select.form-control { background:var(--background); color:var(--text); b
 .model-list .list-buttons-column .icon + .icon { margin-left:0; }
 .model-list .list-buttons-column .row-action-icon { width:16px; height:16px; }
 .model-list td.list-buttons-column { padding-top:9px; padding-bottom:9px; }
+
+/* Boolean fields: box sits left of its label on one line, so a yes/no field takes one row instead of two. */
+.admin-form .form-group-checkbox { display:grid; grid-template-columns:16px 1fr; column-gap:10px; align-items:center; margin-bottom:14px; }
+.admin-form .form-group-checkbox > input[type="checkbox"] { grid-column:1; grid-row:1; }
+.admin-form .form-group-checkbox > label { grid-column:2; grid-row:1; padding:0; cursor:pointer; color:var(--text); }
+.admin-form .form-group-checkbox > .form-text,
+.admin-form .form-group-checkbox > .invalid-feedback { grid-column:2; margin-top:2px; }
+.admin-form input[type="checkbox"] {
+    -webkit-appearance:none; appearance:none; display:inline-grid; place-content:center;
+    width:16px; height:16px; margin:0; cursor:pointer;
+    border:1px solid var(--muted); border-radius:0; background:var(--background); color:var(--background);
+}
+.admin-form input[type="checkbox"]::before { content:""; width:9px; height:4px; border-left:2px solid currentColor; border-bottom:2px solid currentColor; transform:translateY(-1px) rotate(-45deg); visibility:hidden; }
+.admin-form input[type="checkbox"]:checked { background:var(--text); border-color:var(--text); }
+.admin-form input[type="checkbox"]:checked::before { visibility:visible; }
+.admin-form input[type="checkbox"]:hover { border-color:var(--text); }
+.admin-form input[type="checkbox"]:focus-visible { outline:2px solid var(--text); outline-offset:3px; }
+.admin-form input[type="checkbox"]:disabled { opacity:.45; cursor:default; }
+
+/* Form rhythm: label sits tight on its input; the larger gap falls between fields so each pair reads as one unit. */
+.admin-form .form-group > label.col-form-label { padding:0 0 6px; line-height:1.4; }
+.admin-form .form-group { margin-bottom:22px; }
+.admin-form .form-group-checkbox { margin-bottom:22px; }
+/* Date and time inputs carry a small calendar mark so they don't read as free text. */
+.admin-form input.form-control[data-role="datepicker"],
+.admin-form input.form-control[data-role="datetimepicker"],
+.admin-form input.form-control[data-role="timepicker"] {
+    padding-right:36px!important;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%2396978c' stroke-width='1.2'%3E%3Crect x='2' y='3' width='12' height='11'/%3E%3Cpath d='M2 6.5h12M5 1.5v3M11 1.5v3'/%3E%3C/svg%3E");
+    background-repeat:no-repeat; background-position:right 12px center; background-size:16px;
+}
+.admin-form input.form-control[data-role="timepicker"] {
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%2396978c' stroke-width='1.2'%3E%3Ccircle cx='8' cy='8' r='6'/%3E%3Cpath d='M8 4.5V8l2.5 1.5'/%3E%3C/svg%3E");
+}
+.admin-form .form-group-checkbox > label.col-form-label { padding:0; line-height:16px; }
+
+/* Menu toggle keeps the theme's square outline in every state; the global button hover fill made the icon vanish. */
+.navbar .navbar-toggler { border:1px solid var(--button-border); border-radius:0; background:transparent; padding:6px 10px; }
+.navbar .navbar-toggler:hover,
+.navbar .navbar-toggler[aria-expanded="true"] { background:var(--hover-surface); border-color:var(--text); }
+.navbar .navbar-toggler:focus { outline:none; box-shadow:none; }
+.navbar .navbar-toggler:focus-visible { outline:2px solid var(--text); outline-offset:2px; }
