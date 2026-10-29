@@ -565,3 +565,83 @@ select, select.form-control { background:var(--background); color:var(--text); b
 }
 #filter_form table.filters { display:flex; flex-direction:column; gap:12px; }
 @media(max-width:767px) { #filter_form table.filters { gap:16px; } }
+
+/* Pager: borderless numbers, the current page is the only filled square; arrows drawn as thin chevrons. */
+.pagination { gap:2px; margin:16px 0 8px; }
+.pagination .page-link { min-width:32px; height:32px; padding:0 8px; border:0; background:transparent; color:var(--muted); font-size:13px; font-variant-numeric:tabular-nums; }
+.pagination .page-link:hover { background:var(--hover-surface); color:var(--text); }
+.pagination .page-item.active .page-link { background:var(--text); color:var(--background); font-weight:600; }
+.pagination .page-item.disabled .page-link { background:transparent; opacity:.35; }
+.pagination .page-item:first-child .page-link,
+.pagination .page-item:nth-child(2) .page-link,
+.pagination .page-item:nth-last-child(2) .page-link,
+.pagination .page-item:last-child .page-link { font-size:0; }
+.pagination .page-item:first-child .page-link::before,
+.pagination .page-item:nth-child(2) .page-link::before,
+.pagination .page-item:nth-last-child(2) .page-link::before,
+.pagination .page-item:last-child .page-link::before { content:""; width:6px; height:6px; border-left:1.5px solid currentColor; border-bottom:1.5px solid currentColor; transform:translateX(1px) rotate(45deg); }
+.pagination .page-item:first-child .page-link::before,
+.pagination .page-item:last-child .page-link::before { box-shadow:-4px 4px 0 -0.5px transparent; width:6px; }
+.pagination .page-item:first-child .page-link::after,
+.pagination .page-item:last-child .page-link::after { content:""; width:6px; height:6px; margin-left:-2px; border-left:1.5px solid currentColor; border-bottom:1.5px solid currentColor; transform:translateX(1px) rotate(45deg); }
+.pagination .page-item:nth-last-child(2) .page-link::before,
+.pagination .page-item:last-child .page-link::before,
+.pagination .page-item:last-child .page-link::after { transform:translateX(-1px) rotate(-135deg); }
+@media(max-width:575px) { .pagination .page-link { min-width:32px; height:32px; padding:0 6px; } }
+
+/* Filter row polish: header and filters read as one band with a single hairline below; inputs are borderless fills that outline only on focus. */
+.model-list thead tr:first-child th { border-bottom:0; padding-bottom:6px; }
+.model-list .column-filter-row td { padding:0 8px 10px; border-bottom:1px solid var(--line); }
+.model-list .column-filter-row td.list-checkbox-column,
+.model-list .column-filter-row td.list-buttons-column { padding:0; }
+.model-list .column-filter-input { border:0; background-color:var(--background); color:var(--text); box-shadow:inset 0 0 0 1px transparent; transition:box-shadow .12s; }
+.model-list .column-filter-input:hover { box-shadow:inset 0 0 0 1px var(--line); }
+.model-list .column-filter-input:focus { box-shadow:inset 0 0 0 1px var(--text); }
+.model-list input.column-filter-input:not([value=""]),
+.model-list select.column-filter-input:has(option:checked:not([value=""])) { box-shadow:inset 0 0 0 1px var(--muted); }
+.model-list input.column-filter-input::-webkit-search-cancel-button { filter:grayscale(1); opacity:.6; cursor:pointer; }
+@media (prefers-reduced-motion: reduce) { .model-list .column-filter-input { transition:none; } }
+/* Filter text starts on the same vertical line as its column heading (14px cell inset = 6px cell + 8px input). */
+.model-list .column-filter-row td.column-filter-cell { padding-left:6px; padding-right:6px; }
+.model-list thead tr:first-child th.list-checkbox-column { vertical-align:bottom; padding-bottom:6px; }
+
+
+/* Subtler header filters: soft tonal fills with no outlines at rest, hover or when applied; only keyboard/typing focus draws a line. */
+.model-list .column-filter-input { background-color:color-mix(in srgb, var(--background) 55%, var(--table-heading)); box-shadow:none; color:var(--muted); }
+.model-list .column-filter-input:hover { box-shadow:none; background-color:var(--background); }
+.model-list input.column-filter-input:not([value=""]),
+.model-list select.column-filter-input:has(option:checked:not([value=""])) { box-shadow:none; background-color:var(--background); color:var(--text); }
+.model-list .column-filter-input:focus { box-shadow:inset 0 0 0 1px var(--muted); background-color:var(--background); color:var(--text); }
+:root .model-list .column-filter-row .column-filter-input { border:0!important; }
+
+/* Header filters as a single underline: no fill, no box; the line darkens when a filter is applied or focused. */
+.model-list .column-filter-row .column-filter-input,
+.model-list .column-filter-row .column-filter-input:hover,
+.model-list .column-filter-row input.column-filter-input:not([value=""]),
+.model-list .column-filter-row select.column-filter-input:has(option:checked:not([value=""])),
+.model-list .column-filter-row .column-filter-input:focus { background-color:transparent; box-shadow:inset 0 -1px 0 var(--control-border); }
+.model-list .column-filter-row .column-filter-input:hover { box-shadow:inset 0 -1px 0 var(--muted); }
+.model-list .column-filter-row input.column-filter-input:not([value=""]),
+.model-list .column-filter-row select.column-filter-input:has(option:checked:not([value=""])) { box-shadow:inset 0 -1px 0 var(--text); }
+.model-list .column-filter-row .column-filter-input:focus { box-shadow:inset 0 -2px 0 var(--text); }
+:root .model-list .column-filter-row .column-filter-input { background-color:transparent!important; }
+.model-list .column-filter-row input.column-filter-input:not([value=""]),
+.model-list .column-filter-row select.column-filter-input:has(option:checked:not([value=""])) { box-shadow:inset 0 -1px 0 var(--muted); }
+.model-list .column-filter-row .column-filter-input:focus { box-shadow:inset 0 -1px 0 var(--text); }
+
+/* Bootstrap hides the menu toggle on wide screens; restore that after the shared toggle styling above. */
+@media(min-width:992px) { .navbar-expand-lg .navbar-toggler { display:none; } }
+
+/* Page heading shares the tab row: it floats left at tab height and the tab bar (its own formatting context) flows beside it. */
+.container-fluid > h4.mb-4 { float:left; margin:0 28px 0 0!important; font-size:15px; font-weight:600; line-height:20px; padding:8px 0; color:var(--text); }
+.container-fluid > h4.mb-4 ~ *:not(.nav-tabs) { clear:both; }
+.container-fluid > h4.mb-4 + .nav-tabs { overflow:visible; }
+@media(max-width:575px) { .container-fluid > h4.mb-4 { margin-right:18px!important; } }
+/* Icon-only theme toggle at every width (the 40px square can't fit "Dark mode"); the accessible name stays on aria-label. */
+.theme-toggle { font-size:0; gap:0; }
+.theme-toggle::before { content:""; width:16px; height:16px; border:1.5px solid currentColor; border-radius:50%; background:linear-gradient(90deg, currentColor 50%, transparent 50%); }
+/* Tabs that wrap on narrow screens stack tightly instead of inheriting the 24px column gap as row gap. */
+.nav-tabs { row-gap:4px; }
+@media(max-width:575px) { .nav-tabs { column-gap:18px; } }
+/* Less dead space between the header rule and the page title row. */
+.navbar { margin-bottom:24px!important; }

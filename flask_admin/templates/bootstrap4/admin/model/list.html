@@ -37,6 +37,11 @@
         <li class="nav-item dropdown">
             {{ model_layout.filter_options() }}
         </li>
+        <li class="nav-item">
+            <a class="nav-link filter-panel-toggle" href="#filter-panel" role="button" aria-controls="filter-panel" aria-expanded="false" data-filter-panel-toggle
+               data-label-show="{{ _gettext('Show filters') }}{% if active_filters %} ({{ active_filters|length }}){% endif %}"
+               data-label-hide="{{ _gettext('Hide filters') }}">{{ _gettext('Show filters') }}{% if active_filters %} ({{ active_filters|length }}){% endif %}</a>
+        </li>
         {% endif %}
 
         {% if can_set_page_size %}
@@ -61,8 +66,10 @@
     {% endblock %}
 
     {% if filters %}
+    <div id="filter-panel" class="filter-panel" hidden>
         {{ model_layout.filter_form() }}
         <div class="clearfix"></div>
+    </div>
     {% endif %}
 
     {% block model_list_table %}
@@ -147,7 +154,7 @@
                         {% endfor %}
                     </select>
                     {% else %}
-                    <input class="column-filter-input" type="search" name="{{ field_name }}" value="{{ ns.value }}" form="column-filter-form" placeholder="{{ _gettext('Filter') }}" aria-label="{{ _gettext('Filter %(name)s', name=name) }}">
+                    <input class="column-filter-input" type="search" name="{{ field_name }}" value="{{ ns.value }}" form="column-filter-form" aria-label="{{ _gettext('Filter %(name)s', name=name) }}">
                     {% endif %}
                     {% endif %}
                 </td>
@@ -236,6 +243,27 @@
     <script {{ admin_csp_nonce_attribute }} src="{{ admin_static.url(filename='admin/js/bs4_modal.js', v='1.0.0') }}"></script>
     <script {{ admin_csp_nonce_attribute }} src="{{ admin_static.url(filename='admin/js/bs4_filters.js', v='1.0.0') }}"></script>
     <script {{ admin_csp_nonce_attribute }}>
+      (function () {
+        // The filter panel stays fully usable; it is only collapsed out of the way by default.
+        var panel = document.getElementById('filter-panel');
+        var toggle = document.querySelector('[data-filter-panel-toggle]');
+        if (!panel || !toggle) return;
+        var KEY = 'flask-admin:filter-panel-open';
+        function setOpen(open) {
+          panel.hidden = !open;
+          toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+          toggle.textContent = open ? toggle.dataset.labelHide : toggle.dataset.labelShow;
+          try { localStorage.setItem(KEY, open ? '1' : '0'); } catch (e) {}
+        }
+        var stored = null;
+        try { stored = localStorage.getItem(KEY); } catch (e) {}
+        setOpen(stored === '1');
+        toggle.addEventListener('click', function (e) { e.preventDefault(); setOpen(panel.hidden); });
+        // Adding a filter from the menu reveals the panel so the new row is visible.
+        document.querySelectorAll('.field-filters .filter').forEach(function (el) {
+          el.addEventListener('click', function () { setOpen(true); });
+        });
+      })();
       (function () {
         var form = document.getElementById('column-filter-form');
         if (!form) return;
