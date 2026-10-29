@@ -1031,6 +1031,51 @@ class BaseModelView(BaseView, ActionsMixin):
             self._filter_groups = None
             self._filter_args = None
 
+        self._column_filters_by_name = self._build_column_filters()
+
+    def _build_column_filters(self) -> dict[str, dict[str, t.Any]]:
+        """
+        Pick one filter per column for the inline filter row under the list
+        header: "equals" when the filter offers fixed options, otherwise
+        "contains", otherwise "equals". Keyed by the filter's display name,
+        which matches the column's header label.
+        """
+        if not self._filters:
+            return {}
+
+        preference = ("contains", "equals")
+        chosen: dict[str, tuple[int, int, BaseFilter]] = {}
+        for i, flt in enumerate(self._filters):
+            operation = flt.operation()
+            operation = getattr(operation, "_args", [operation])[0]
+            options = flt.get_options(self)
+            if operation == "equals" and options:
+                rank = -1
+            elif operation in preference:
+                rank = preference.index(operation)
+            else:
+                continue
+            name = as_unicode(flt.name)
+            if name not in chosen or rank < chosen[name][0]:
+                chosen[name] = (rank, i, flt)
+
+        return {
+            name: {
+                "index": i,
+                "arg": self.get_filter_arg(i, flt),
+                "options": flt.get_options(self) or None,
+                "type": flt.data_type,
+            }
+            for name, (_, i, flt) in chosen.items()
+        }
+
+    def get_list_column_filter(self, name: str) -> dict[str, t.Any] | None:
+        """
+        Return the inline filter for the list column with header label `name`,
+        or None when that column has no filter.
+        """
+        return self._column_filters_by_name.get(as_unicode(name))
+
     def _refresh_form_rules_cache(self) -> None:
         self._form_create_rules: rules.RuleSet | None
         if self.form_create_rules:

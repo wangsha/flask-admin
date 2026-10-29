@@ -461,7 +461,7 @@ select, select.form-control { background:var(--background); color:var(--text); b
 
 /* Row actions: smaller icon-only toolbar that stays quiet until the row is hovered or focused. */
 .model-list .list-buttons-column a.icon,
-.model-list .list-buttons-column form.icon button { width:24px; height:24px; min-height:24px; color:var(--placeholder); }
+.model-list .list-buttons-column form.icon button { width:24px; height:24px; min-height:24px; color:var(--muted); }
 .model-list .list-buttons-column .icon + .icon { margin-left:0; }
 .model-list .list-buttons-column .row-action-icon { width:16px; height:16px; }
 .model-list td.list-buttons-column { padding-top:9px; padding-bottom:9px; }
@@ -507,3 +507,61 @@ select, select.form-control { background:var(--background); color:var(--text); b
 .navbar .navbar-toggler[aria-expanded="true"] { background:var(--hover-surface); border-color:var(--text); }
 .navbar .navbar-toggler:focus { outline:none; box-shadow:none; }
 .navbar .navbar-toggler:focus-visible { outline:2px solid var(--text); outline-offset:2px; }
+
+/* Header controls: menu and theme buttons share one 40px square, one border and one 1.5px line weight. */
+.navbar .navbar-toggler,
+.theme-toggle { width:40px; height:40px; min-height:40px; padding:0; display:inline-flex; align-items:center; justify-content:center; border:1px solid var(--button-border); border-radius:0; background:transparent; color:var(--text); }
+.navbar .navbar-toggler:hover, .theme-toggle:hover,
+.navbar .navbar-toggler[aria-expanded="true"] { background:var(--hover-surface); border-color:var(--text); color:var(--text); }
+.navbar .navbar-toggler-icon { width:16px; height:11px; background:linear-gradient(currentColor,currentColor) top/100% 1.5px no-repeat, linear-gradient(currentColor,currentColor) center/100% 1.5px no-repeat, linear-gradient(currentColor,currentColor) bottom/100% 1.5px no-repeat; filter:none!important; }
+.theme-toggle::before { width:16px; height:16px; border-width:1.5px; }
+@media(max-width:991px) { .theme-toggle { top:50%; transform:translateY(-50%); } .navbar { align-items:center; } }
+@media(max-width:991px) { .admin-mobile-brand { left:calc(4vw + 56px); } }
+
+/* Fewer lines: rows are separated by one horizontal rule; no column rules, no zebra stripes, no outer box. */
+.table-responsive { border:0; border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
+.model-list.table-bordered td,
+.model-list.table-bordered th { border-left:0; border-right:0; }
+.model-list.table-striped tbody tr:nth-of-type(odd) { background:transparent; }
+.model-list thead th { border-bottom:1px solid var(--control-border); }
+
+/* View tabs: no box and no baseline rule; the current tab is marked with an underline, like the top menu. */
+.nav-tabs { border-bottom:0; gap:24px; margin-bottom:20px; }
+.nav-tabs .nav-link,.nav-tabs>li>a { padding:8px 0; border:0; background:transparent; }
+.nav-tabs .nav-link.active,.nav-tabs .nav-item.show .nav-link,.nav-tabs>li.active>a {
+    background:transparent; border:0; color:var(--text);
+    text-decoration:underline; text-decoration-thickness:1px; text-underline-offset:8px;
+}
+.nav-tabs .nav-link:hover { border:0; background:transparent; color:var(--text); }
+.nav-tabs .nav-link:focus-visible { outline:2px solid var(--text); outline-offset:4px; }
+
+/* Tab dropdowns: an open menu is not the current view, so no underline; the menu hugs its items and starts flush with the tab text. */
+.nav-tabs .nav-item.show .nav-link:not(.active) { text-decoration:none; }
+.nav-tabs .dropdown-menu { min-width:160px; margin-top:6px; padding:4px; border-color:var(--control-border); box-shadow:0 8px 24px rgba(0,0,0,.35); }
+.nav-tabs .dropdown-item { padding:8px 10px; line-height:1.3; }
+:root[data-theme="light"] .nav-tabs .dropdown-menu { box-shadow:0 8px 24px rgba(39,44,35,.12); }
+.nav-tabs .dropdown-menu { margin-left:-14px; }
+
+/* Inline column filters: one quiet input per filterable column, directly under its header. */
+.model-list .column-filter-row td { padding:6px 8px; background:var(--table-heading); border-top:0; border-bottom:1px solid var(--control-border); vertical-align:middle; }
+.model-list thead tr:first-child th { border-bottom-color:var(--line); }
+.model-list .column-filter-input { width:100%; min-width:80px; height:28px; min-height:28px!important; padding:4px 8px!important; font:12px var(--font-sans); color:var(--text); background:var(--background); border:1px solid var(--control-border); border-radius:0; }
+.model-list .column-filter-input::placeholder { color:var(--placeholder); }
+.model-list .column-filter-input:focus { outline:none; border-color:var(--text); }
+.model-list select.column-filter-input { -webkit-appearance:none; appearance:none; padding-right:22px!important; background-image:linear-gradient(45deg, transparent 50%, var(--muted) 50%), linear-gradient(135deg, var(--muted) 50%, transparent 50%); background-position:calc(100% - 12px) 12px, calc(100% - 8px) 12px; background-size:4px 4px; background-repeat:no-repeat; }
+
+/* Narrow screens: each filter is a two-line card-free group — name and operation share a line, the value fills the line below. */
+@media(max-width:767px) {
+    #filter_form { gap:16px; }
+    #filter_form .filters, #filter_form .filters tbody { width:100%; }
+    #filter_form .filters tbody { gap:16px; }
+    #filter_form .filters tr { display:grid; grid-template-columns:auto minmax(0,1fr); gap:8px; width:100%; }
+    #filter_form .filters td:last-child { grid-column:1 / -1; }
+    #filter_form .filters td:nth-child(2) .select2-container,
+    #filter_form .filters td:nth-child(2) .filter-op,
+    #filter_form .filters td:last-child .select2-container,
+    #filter_form .filters td:last-child .filter-val { width:100%!important; max-width:none; }
+    #filter_form > .pull-right { width:100%; }
+}
+#filter_form table.filters { display:flex; flex-direction:column; gap:12px; }
+@media(max-width:767px) { #filter_form table.filters { gap:16px; } }
