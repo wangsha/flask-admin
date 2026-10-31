@@ -21,11 +21,11 @@
     <table class="table table-hover table-bordered searchable fa-details-table">
     {% for c, name in details_columns %}
       <tr>
-        <td>
+        <td class="detail-label-cell">
           <b>{{ name }}</b>
         </td>
-        <td>
-        {{ get_value(model, c) }}
+        <td class="detail-value-cell" title="{{ _gettext('Double-click to copy value') }}">
+          <div class="detail-value">{{ get_value(model, c) }}</div>
         </td>
       </tr>
     {% endfor %}

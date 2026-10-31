@@ -68,7 +68,7 @@ class AjaxSelect2Widget:
                 kwargs["data-json"] = json.dumps(data)
 
         placeholder = field.loader.options.get(
-            "placeholder", gettext("Please select model")
+            "placeholder", gettext("Search to choose…")
         )
         kwargs.setdefault("data-placeholder", placeholder)
 

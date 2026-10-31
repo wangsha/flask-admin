@@ -141,13 +141,13 @@ def test_mounting_on_host(
 
     # Check that static assets are embedded with the expected (relative) URLs
     assert (
-        b'<link href="https://cdn.jsdelivr.net/gh/pallets-eco/flask-admin@2.0.2/'
-        b'flask_admin/static/bootstrap/bootstrap4/swatch/default/bootstrap.min.css?v=4.6.2"'
+        b'<link href="https://cdn.jsdelivr.net/npm/'
+        b'bootstrap@4.6.2/dist/css/bootstrap.min.css"'
         in rv.data
     )
     assert (
-        b'<script  src="https://cdn.jsdelivr.net/gh/pallets-eco/flask-admin@2.0.2/'
-        b'flask_admin/static/vendor/jquery.min.js?v=3.5.1" type="text/javascript">'
+        b'<script  src="https://cdn.jsdelivr.net/npm/'
+        b'jquery@3.7.1/dist/jquery.min.js" type="text/javascript">'
         in rv.data
     )
 
@@ -197,13 +197,13 @@ def test_mounting_on_wildcard_host(
 
         # Check that static assets are embedded with the expected (relative) URLs
         assert (
-            b'<link href="https://cdn.jsdelivr.net/gh/pallets-eco/flask-admin@2.0.2/'
-            b'flask_admin/static/bootstrap/bootstrap4/swatch/default/bootstrap.min.css?v=4.6.2"'
+            b'<link href="https://cdn.jsdelivr.net/npm/'
+            b'bootstrap@4.6.2/dist/css/bootstrap.min.css"'
             in rv.data
         )
         assert (
-            b'<script  src="https://cdn.jsdelivr.net/gh/pallets-eco/flask-admin@2.0.2/'
-            b'flask_admin/static/vendor/jquery.min.js?v=3.5.1" type="text/javascript">'
+            b'<script  src="https://cdn.jsdelivr.net/npm/'
+            b'jquery@3.7.1/dist/jquery.min.js" type="text/javascript">'
             in rv.data
         )
 

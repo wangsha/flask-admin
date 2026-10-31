@@ -48,6 +48,10 @@ class GraphiteTheme(BootstrapTheme):
 
     Override the ``--background``, ``--surface``, ``--text``, ``--muted``, and
     ``--line`` CSS variables in a view's ``extra_css`` to customize the palette.
+
+    Font Awesome is not loaded: ``graphite.css`` draws the icons the built-in
+    templates use. It is still loaded when a menu item uses
+    ``menu_icon_type="fa"``.
     """
 
     folder: typing.Literal["bootstrap4"] = "bootstrap4"

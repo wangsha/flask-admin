@@ -8,7 +8,7 @@
 {% endblock %}
 {% block head %}
     {{ super() }}
-    <script {{ admin_csp_nonce_attribute }} src="{{ admin_static.url(filename='admin/js/graphite.js', v='1.0.1') }}"></script>
+    <script {{ admin_csp_nonce_attribute }} src="{{ admin_static.url(filename='admin/js/graphite.js', v='1.0.3') }}"></script>
 {% endblock %}
 {% block navbar_controls %}
     <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch to light theme" aria-pressed="false" hidden>Light mode</button>

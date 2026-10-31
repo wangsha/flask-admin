@@ -1031,6 +1031,51 @@ class BaseModelView(BaseView, ActionsMixin):
             self._filter_groups = None
             self._filter_args = None
 
+        self._column_filters_by_name = self._build_column_filters()
+
+    def _build_column_filters(self) -> dict[str, dict[str, t.Any]]:
+        """
+        Pick one filter per column for the inline filter row under the list
+        header: "equals" when the filter offers fixed options, otherwise
+        "contains", otherwise "equals". Keyed by the filter's display name,
+        which matches the column's header label.
+        """
+        if not self._filters:
+            return {}
+
+        preference = ("contains", "equals")
+        chosen: dict[str, tuple[int, int, BaseFilter]] = {}
+        for i, flt in enumerate(self._filters):
+            operation = flt.operation()
+            operation = getattr(operation, "_args", [operation])[0]
+            options = flt.get_options(self)
+            if operation == "equals" and options:
+                rank = -1
+            elif operation in preference:
+                rank = preference.index(operation)
+            else:
+                continue
+            name = as_unicode(flt.name)
+            if name not in chosen or rank < chosen[name][0]:
+                chosen[name] = (rank, i, flt)
+
+        return {
+            name: {
+                "index": i,
+                "arg": self.get_filter_arg(i, flt),
+                "options": flt.get_options(self) or None,
+                "type": flt.data_type,
+            }
+            for name, (_, i, flt) in chosen.items()
+        }
+
+    def get_list_column_filter(self, name: str) -> dict[str, t.Any] | None:
+        """
+        Return the inline filter for the list column with header label `name`,
+        or None when that column has no filter.
+        """
+        return self._column_filters_by_name.get(as_unicode(name))
+
     def _refresh_form_rules_cache(self) -> None:
         self._form_create_rules: rules.RuleSet | None
         if self.form_create_rules:
@@ -2128,13 +2173,15 @@ class BaseModelView(BaseView, ActionsMixin):
         :param name:
             Field name
         """
-        return self._get_list_value(
+        value = self._get_list_value(
             context,
             model,
             name,
             self.column_formatters,
             self.column_type_formatters,  # type: ignore[arg-type]
         )
+
+        return self._link_reference_value(model, name, value, self.column_formatters)
 
     @pass_context
     def get_detail_value(
@@ -2150,13 +2197,52 @@ class BaseModelView(BaseView, ActionsMixin):
         :param name:
             Field name
         """
-        return self._get_list_value(
+        value = self._get_list_value(
             context,
             model,
             name,
             self.column_formatters_detail,  # type: ignore[arg-type]
             self.column_type_formatters_detail,  # type: ignore[arg-type]
         )
+        return self._link_reference_value(
+            model, name, value, self.column_formatters_detail
+        )
+
+    def _link_reference_value(
+        self, model: T_ORM_MODEL, name: str, value: t.Any,
+        formatters: T_COLUMN_FORMATTERS | None,
+    ) -> t.Any:
+        """Link registered, accessible model references in HTML views only."""
+        # Explicit field formatters retain control of their own markup.
+        if name in (formatters or {}) or not self.admin:
+            return value
+
+        reference = self._get_field_value(model, name)
+
+        def reference_link(record: t.Any, label: t.Any) -> t.Any:
+            for view in self.admin._views:
+                target_model = getattr(view, "model", None)
+                if (
+                    isinstance(target_model, type)
+                    and isinstance(record, target_model)
+                    and getattr(view, "can_view_details", False)
+                    and view.is_accessible()
+                ):
+                    pk = view.get_pk_value(record)
+                    if pk is not None:
+                        url = view.get_url(f"{view.endpoint}.details_view", id=pk)
+                        return Markup(
+                            '<a class="detail-reference-link" href="{}">{}</a>'
+                        ).format(url, label)
+            return label
+
+        if isinstance(reference, (list, tuple)):
+            # Only replace collection formatting when it contains model records.
+            linked = [reference_link(record, str(record)) for record in reference]
+            if any(isinstance(item, Markup) for item in linked):
+                return Markup(", ").join(linked)
+            return value
+        return reference_link(reference, value)
 
     def get_export_value(self, model: T_ORM_MODEL, name: T_COLUMN) -> t.Any:
         """

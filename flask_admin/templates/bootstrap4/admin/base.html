@@ -12,12 +12,23 @@
         <meta name="author" content="">
     {% endblock %}
     {% block head_css %}
-        <link href="{{ admin_static.url(filename='bootstrap/bootstrap4/swatch/{swatch}/bootstrap.min.css'.format(swatch=theme.swatch), v='4.6.2') }}"
+        {% set bootstrap_css = 'bootstrap@4.6.2/dist/css' if theme.swatch == 'default' else 'bootswatch@4.6.2/dist/' ~ theme.swatch %}
+        <link href="https://cdn.jsdelivr.net/npm/{{ bootstrap_css }}/bootstrap.min.css"
               rel="stylesheet" {{ admin_csp_nonce_attribute }}>
         <link href="{{ admin_static.url(filename='admin/css/bootstrap4/admin.css', v='1.1.2') }}" rel="stylesheet" {{ admin_csp_nonce_attribute }}>
+        {# Graphite draws its own icons, but menu items with icon_type 'fa' still need Font Awesome. #}
+        {% set icon_font = namespace(needed='admin/css/graphite.css' not in theme.stylesheets|default(())) %}
+        {% if not icon_font.needed %}
+          {% for item in admin_view.admin.menu() + admin_view.admin.menu_links() recursive %}
+            {% if item.get_icon_type() == 'fa' %}{% set icon_font.needed = true %}{% endif %}
+            {% if item.is_category() %}{{ loop(item.get_children()) }}{% endif %}
+          {% endfor %}
+        {% endif %}
+        {% if icon_font.needed %}
         <link href="{{ admin_static.url(filename='bootstrap/bootstrap4/css/font-awesome.min.css', v='4.7.0') }}" rel="stylesheet" {{ admin_csp_nonce_attribute }}>
+        {% endif %}
         {% for stylesheet in theme.stylesheets | default(()) %}
-          <link href="{{ admin_static.url(filename=stylesheet, v='1.0.13') }}" rel="stylesheet" {{ admin_csp_nonce_attribute }}>
+          <link href="{{ admin_static.url(filename=stylesheet, v='1.0.25') }}" rel="stylesheet" {{ admin_csp_nonce_attribute }}>
         {% endfor %}
         {% if admin_view.extra_css %}
           {% for css_url in admin_view.extra_css %}
@@ -80,15 +91,18 @@
 {% endblock %}
 
 {% block tail_js %}
-    <script {{ admin_csp_nonce_attribute }} src="{{ admin_static.url(filename='vendor/jquery.min.js', v='3.5.1') }}" type="text/javascript"></script>
-    <script {{ admin_csp_nonce_attribute }} src="{{ admin_static.url(filename='bootstrap/bootstrap4/js/popper.min.js') }}" type="text/javascript"></script>
-    <script {{ admin_csp_nonce_attribute }} src="{{ admin_static.url(filename='bootstrap/bootstrap4/js/bootstrap.min.js', v='4.6.2') }}"
+    <script {{ admin_csp_nonce_attribute }} src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js" type="text/javascript"></script>
+    <script {{ admin_csp_nonce_attribute }} src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" type="text/javascript"></script>
+    {# bootstrap.min.js already includes util and dropdown; don't load them separately. #}
+    <script {{ admin_csp_nonce_attribute }} src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"
             type="text/javascript"></script>
     <script {{ admin_csp_nonce_attribute }} src="{{ admin_static.url(filename='vendor/moment.min.js', v='2.9.4') }}" type="text/javascript"></script>
-    <script {{ admin_csp_nonce_attribute }} src="{{ admin_static.url(filename='vendor/bootstrap4/util.js', v='4.3.1') }}" type="text/javascript"></script>
-    <script {{ admin_csp_nonce_attribute }} src="{{ admin_static.url(filename='vendor/bootstrap4/dropdown.js', v='4.3.1') }}" type="text/javascript"></script>
-    <script {{ admin_csp_nonce_attribute }} src="{{ admin_static.url(filename='vendor/select2/select2.min.js', v='4.2.1') }}"
+    {# Full build: x-editable's select2 input still binds to a hidden <input>, which needs the compat modules. #}
+    <script {{ admin_csp_nonce_attribute }} src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.full.min.js"
             type="text/javascript"></script>
+    {% if 'admin/css/graphite.css' not in theme.stylesheets|default(()) %}
+    <script {{ admin_csp_nonce_attribute }} type="text/javascript">jQuery.fn.select2.defaults.set('theme', 'bootstrap4');</script>
+    {% endif %}
     <script {{ admin_csp_nonce_attribute }} src="{{ admin_static.url(filename='vendor/multi-level-dropdowns-bootstrap/bootstrap4-dropdown-ml-hack.js') }}" type="text/javascript"></script>
     <script {{ admin_csp_nonce_attribute }} src="{{ admin_static.url(filename='admin/js/helpers.js', v='1.0.0') }}" type="text/javascript"></script>
     {% if admin_view.extra_js %}

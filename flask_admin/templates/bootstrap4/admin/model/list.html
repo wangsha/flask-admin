@@ -37,6 +37,11 @@
         <li class="nav-item dropdown">
             {{ model_layout.filter_options() }}
         </li>
+        <li class="nav-item">
+            <a class="nav-link filter-panel-toggle" href="#filter-panel" role="button" aria-controls="filter-panel" aria-expanded="false" data-filter-panel-toggle
+               data-label-show="{{ _gettext('Show filters') }}{% if active_filters %} ({{ active_filters|length }}){% endif %}"
+               data-label-hide="{{ _gettext('Hide filters') }}">{{ _gettext('Show filters') }}{% if active_filters %} ({{ active_filters|length }}){% endif %}</a>
+        </li>
         {% endif %}
 
         {% if can_set_page_size %}
@@ -61,11 +66,25 @@
     {% endblock %}
 
     {% if filters %}
+    <div id="filter-panel" class="filter-panel" hidden>
         {{ model_layout.filter_form() }}
         <div class="clearfix"></div>
+    </div>
     {% endif %}
 
     {% block model_list_table %}
+    <form id="column-filter-form" class="d-none" method="GET" action="{{ return_url.split('?')[0] }}">
+        {% if sort_column is not none %}<input type="hidden" name="sort" value="{{ sort_column }}">{% endif %}
+        {% if sort_desc %}<input type="hidden" name="desc" value="1">{% endif %}
+        {% if search %}<input type="hidden" name="search" value="{{ search }}">{% endif %}
+        {% if page_size != default_page_size %}<input type="hidden" name="page_size" value="{{ page_size }}">{% endif %}
+        {% for k, v in (extra_args or {}).items() %}<input type="hidden" name="{{ k }}" value="{{ v }}">{% endfor %}
+        {% for idx, flt_name, value in (active_filters or []) %}
+            {% if not admin_view.get_list_column_filter(flt_name) or admin_view.get_list_column_filter(flt_name).index != idx %}
+            <input type="hidden" name="flt{{ loop.index0 }}_{{ admin_view.get_filter_arg(idx, filters[idx]) }}" value="{{ value }}">
+            {% endif %}
+        {% endfor %}
+    </form>
     <div class="table-responsive">
     <table class="table table-striped table-bordered table-hover model-list">
         <thead>
@@ -83,19 +102,19 @@
                     {% endblock %}
                     {% for c, name in list_columns %}
                     {% set column = loop.index0 %}
-                    <th class="column-header col-{{c | replace('.', '-') }}">
+                    <th class="column-header col-{{c | replace('.', '-') }}"{% if admin_view.is_sortable(c) %} aria-sort="{{ ('descending' if sort_desc else 'ascending') if sort_column == column else 'none' }}"{% endif %}>
                         {% if admin_view.is_sortable(c) %}
                             {% if sort_column == column %}
-                                <a href="{{ sort_url(column, True) }}" title="{{ _gettext('Sort by %(name)s', name=name) }}">
-                                    {{ name }}
+                                <a class="column-sort-link" href="{{ sort_url(column, True) }}" title="{{ _gettext('Sort by %(name)s', name=name) }}">
+                                    <span class="column-sort-label">{{ name }}</span>
                                     {% if sort_desc %}
-                                        <span class="fa fa-chevron-down glyphicon glyphicon-chevron-down"></span>
+                                        <span class="column-sort-icon column-sort-desc fa fa-chevron-down glyphicon glyphicon-chevron-down" aria-hidden="true"></span>
                                     {% else %}
-                                        <span class="fa fa-chevron-up glyphicon glyphicon-chevron-up"></span>
+                                        <span class="column-sort-icon column-sort-asc fa fa-chevron-up glyphicon glyphicon-chevron-up" aria-hidden="true"></span>
                                     {% endif %}
                                 </a>
                             {% else %}
-                                <a href="{{ sort_url(column) }}" title="{{ _gettext('Sort by %(name)s', name=name) }}">{{ name }}</a>
+                                <a class="column-sort-link" href="{{ sort_url(column) }}" title="{{ _gettext('Sort by %(name)s', name=name) }}"><span class="column-sort-label">{{ name }}</span><span class="column-sort-icon column-sort-idle" aria-hidden="true"></span></a>
                             {% endif %}
                         {% else %}
                             {{ name }}
@@ -110,12 +129,45 @@
                     {% endfor %}
                 {% endblock %}
             </tr>
+            {% block list_column_filters %}
+            {% set cf_ns = namespace(any=false, indexes=[]) %}
+            {% for c, name in list_columns %}
+                {% set cf = admin_view.get_list_column_filter(name) %}
+                {% if cf %}{% set cf_ns.any = true %}{% set cf_ns.indexes = cf_ns.indexes + [cf.index] %}{% endif %}
+            {% endfor %}
+            {% if cf_ns.any %}
+            <tr class="column-filter-row">
+                {% if actions %}<td class="list-checkbox-column"></td>{% endif %}
+                {% if admin_view.column_display_actions %}<td class="list-buttons-column"></td>{% endif %}
+                {% for c, name in list_columns %}
+                {% set cf = admin_view.get_list_column_filter(name) %}
+                <td class="column-filter-cell">
+                    {% if cf %}
+                    {% set ns = namespace(value='') %}
+                    {% for idx, flt_name, value in (active_filters or []) %}{% if idx == cf.index %}{% set ns.value = value %}{% endif %}{% endfor %}
+                    {% set field_name = 'flt%d_%s' % (loop.index0 + 100, cf.arg) %}
+                    {% if cf.options %}
+                    <select class="column-filter-input" name="{{ field_name }}" form="column-filter-form" aria-label="{{ _gettext('Filter %(name)s', name=name) }}">
+                        <option value="">{{ _gettext('Any') }}</option>
+                        {% for opt_value, opt_label in cf.options %}
+                        <option value="{{ opt_value }}"{% if ns.value|string == opt_value|string %} selected{% endif %}>{{ opt_label }}</option>
+                        {% endfor %}
+                    </select>
+                    {% else %}
+                    <input class="column-filter-input" type="search" name="{{ field_name }}" value="{{ ns.value }}" form="column-filter-form" aria-label="{{ _gettext('Filter %(name)s', name=name) }}">
+                    {% endif %}
+                    {% endif %}
+                </td>
+                {% endfor %}
+            </tr>
+            {% endif %}
+            {% endblock %}
         </thead>
         {% for row in data %}
         <tr>
             {% block list_row scoped %}
                 {% if actions %}
-                <td>
+                <td class="list-checkbox-column">
                     <input type="checkbox" name="rowid" class="action-checkbox" value="{{ get_pk_value(row) }}" title="{{ _gettext('Select record') }}" />
                 </td>
                 {% endif %}
@@ -190,6 +242,43 @@
     {{ lib.form_js() }}
     <script {{ admin_csp_nonce_attribute }} src="{{ admin_static.url(filename='admin/js/bs4_modal.js', v='1.0.0') }}"></script>
     <script {{ admin_csp_nonce_attribute }} src="{{ admin_static.url(filename='admin/js/bs4_filters.js', v='1.0.0') }}"></script>
+    <script {{ admin_csp_nonce_attribute }}>
+      (function () {
+        // The filter panel stays fully usable; it is only collapsed out of the way by default.
+        var panel = document.getElementById('filter-panel');
+        var toggle = document.querySelector('[data-filter-panel-toggle]');
+        if (!panel || !toggle) return;
+        var KEY = 'flask-admin:filter-panel-open';
+        function setOpen(open) {
+          panel.hidden = !open;
+          toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+          toggle.textContent = open ? toggle.dataset.labelHide : toggle.dataset.labelShow;
+          try { localStorage.setItem(KEY, open ? '1' : '0'); } catch (e) {}
+        }
+        var stored = null;
+        try { stored = localStorage.getItem(KEY); } catch (e) {}
+        setOpen(stored === '1');
+        toggle.addEventListener('click', function (e) { e.preventDefault(); setOpen(panel.hidden); });
+        // Adding a filter from the menu reveals the panel so the new row is visible.
+        document.querySelectorAll('.field-filters .filter').forEach(function (el) {
+          el.addEventListener('click', function () { setOpen(true); });
+        });
+      })();
+      (function () {
+        var form = document.getElementById('column-filter-form');
+        if (!form) return;
+        function apply() {
+          // Drop empty column filters so they don't reach the server as invalid values.
+          document.querySelectorAll('.column-filter-input').forEach(function (el) { el.disabled = el.value === ''; });
+          form.submit();
+        }
+        document.querySelectorAll('.column-filter-input').forEach(function (el) {
+          if (el.tagName === 'SELECT') { el.addEventListener('change', apply); return; }
+          el.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); apply(); } });
+          el.addEventListener('search', function () { if (el.value === '' && el.defaultValue !== '') apply(); });
+        });
+      })();
+    </script>
 
 
     {{ actionlib.script(_gettext('Please select at least one record.'),
