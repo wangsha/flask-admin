@@ -195,7 +195,9 @@
                         {{ form[c](pk=get_pk_value(row), display_value=get_value(row, c)) }}
                         {% endif %}
                     {% else %}
-                    {{ get_value(row, c) }}
+                    {% set cell_value = get_value(row, c) %}
+                    {% set cell_text = cell_value|string|striptags %}
+                    <div class="list-cell-value"{% if cell_text|length > 80 %} title="{{ cell_text|truncate(2000) }}"{% endif %}>{{ cell_value }}</div>
                     {% endif %}
                     </td>
                 {% endfor %}
