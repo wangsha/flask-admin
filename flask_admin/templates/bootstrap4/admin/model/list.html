@@ -50,6 +50,21 @@
         </li>
         {% endif %}
 
+        {% if list_columns|length > 1 %}
+        <li class="nav-item dropdown column-picker">
+            <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)" role="button" aria-haspopup="true" aria-expanded="false">{{ _gettext('Columns') }}</a>
+            <div class="dropdown-menu column-picker-menu" data-column-offset="{{ (1 if actions else 0) + (1 if admin_view.column_display_actions else 0) }}">
+                {% for c, name in list_columns %}
+                <label class="dropdown-item column-picker-item">
+                    <input type="checkbox" checked data-column="{{ c }}" data-column-index="{{ loop.index }}"> {{ name }}
+                </label>
+                {% endfor %}
+                <div class="dropdown-divider"></div>
+                <button type="button" class="dropdown-item column-picker-reset">{{ _gettext('Show all') }}</button>
+            </div>
+        </li>
+        {% endif %}
+
         {% if actions %}
         <li class="nav-item dropdown">
             {{ actionlib.dropdown(actions) }}
@@ -265,6 +280,39 @@
         document.querySelectorAll('.field-filters .filter').forEach(function (el) {
           el.addEventListener('click', function () { setOpen(true); });
         });
+      })();
+      (function () {
+        // Column picker: hides columns in this browser only, remembered per list page.
+        var menu = document.querySelector('.column-picker-menu');
+        if (!menu) return;
+        var KEY = 'flask-admin:hidden-columns:' + location.pathname;
+        var offset = parseInt(menu.dataset.columnOffset, 10) || 0;
+        var boxes = Array.prototype.slice.call(menu.querySelectorAll('input[data-column]'));
+        var style = document.createElement('style');
+        document.head.appendChild(style);
+        var hidden = [];
+        try { hidden = JSON.parse(localStorage.getItem(KEY) || '[]'); } catch (e) {}
+        function apply() {
+          style.textContent = boxes.filter(function (b) { return !b.checked; }).map(function (b) {
+            return '.model-list tr:not(.model-list-empty) > :nth-child(' + (offset + parseInt(b.dataset.columnIndex, 10)) + ') { display:none; }';
+          }).join('\n');
+          var names = boxes.filter(function (b) { return !b.checked; }).map(function (b) { return b.dataset.column; });
+          try { names.length ? localStorage.setItem(KEY, JSON.stringify(names)) : localStorage.removeItem(KEY); } catch (e) {}
+        }
+        boxes.forEach(function (b) {
+          b.checked = hidden.indexOf(b.dataset.column) === -1;
+          b.addEventListener('change', function () {
+            // Keep at least one column visible.
+            if (!boxes.some(function (x) { return x.checked; })) b.checked = true;
+            apply();
+          });
+        });
+        menu.addEventListener('click', function (e) { e.stopPropagation(); });
+        menu.querySelector('.column-picker-reset').addEventListener('click', function () {
+          boxes.forEach(function (b) { b.checked = true; });
+          apply();
+        });
+        apply();
       })();
       (function () {
         var form = document.getElementById('column-filter-form');
