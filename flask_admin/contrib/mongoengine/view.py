@@ -393,6 +393,17 @@ class ModelView(BaseModelView):
 
         return columns
 
+    def scaffold_selectable_list_columns(self) -> list[str]:
+        """
+        Every model field, embedded documents included, since their values
+        have readable list formatters.
+        """
+        return [
+            n
+            for n, f in self._get_model_fields()
+            if self.column_display_pk or type(f) is not mongoengine.ObjectIdField
+        ]
+
     def scaffold_sortable_columns(self) -> dict[str, t.Any]:  # type: ignore[override]
         """
         Return a dictionary of sortable columns (name, field)
