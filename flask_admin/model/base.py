@@ -291,6 +291,12 @@ class BaseModelView(BaseView, ActionsMixin):
         Collection of fields excluded from the details view.
     """
 
+    column_details_render_html: bool = False
+    """
+        Render details values as trusted HTML instead of escaping them.
+        Only enable this when every displayed value is safe to render.
+    """
+
     column_export_list: list[str] | None = None
     """
         Collection of the field names included in the export.
@@ -1276,6 +1282,14 @@ class BaseModelView(BaseView, ActionsMixin):
             only_columns=only_columns,
             excluded_columns=self.column_details_exclude_list,
         )
+
+    def get_details_extra_rows(self, model: t.Any) -> list[tuple[str, t.Any]]:
+        """
+        Extra ``(label, value)`` rows appended to the details view.
+        Override to show computed content; values follow
+        `column_details_render_html`.
+        """
+        return []
 
     def get_export_columns(self) -> list[tuple[T_COLUMN, str]]:
         """
