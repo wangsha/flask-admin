@@ -42,6 +42,7 @@ from .form import get_form
 from .helpers import format_error
 from .subdoc import convert_subdocuments
 from .tools import parse_like_term
+from .typefmt import DEFAULT_DETAIL_FORMATTERS
 from .typefmt import DEFAULT_FORMATTERS
 
 # Set up logger
@@ -162,6 +163,11 @@ class ModelView(BaseModelView):
     column_type_formatters: T_COLUMN_TYPE_FORMATTERS = DEFAULT_FORMATTERS
     """
         Customized type formatters for MongoEngine backend
+    """
+
+    column_type_formatters_detail: T_COLUMN_TYPE_FORMATTERS = DEFAULT_DETAIL_FORMATTERS
+    """
+        Customized details-page type formatters for MongoEngine backend
     """
 
     allowed_search_types = (
