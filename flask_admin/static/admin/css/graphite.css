@@ -683,3 +683,25 @@ input[type="search"]::-webkit-search-cancel-button:hover { opacity:1; }
 .fa-details-table td, .fa-details-table th { white-space:normal; }
 /* Images in details values shrink to the cell. */
 .fa-details-table .detail-value img, .fa-details-table .detail-value video { max-width:100%!important; height:auto!important; }
+
+/* Navbar page search: find any registered view by name or category. */
+.view-search { position:relative; margin:0 12px; }
+.view-search-input { width:200px; height:36px; min-height:36px; padding:6px 10px; font-size:13px; }
+.view-search-results { position:absolute; right:0; top:calc(100% + 6px); z-index:1050; width:320px; max-height:60vh; overflow-y:auto; padding:4px; background:var(--surface); border:1px solid var(--control-border); box-shadow:0 8px 24px rgba(0,0,0,.35); }
+:root[data-theme="light"] .view-search-results { box-shadow:0 8px 24px rgba(39,44,35,.12); }
+.view-search-item { display:flex; flex-direction:column; gap:2px; padding:8px; color:var(--text); text-decoration:none; font-size:13px; line-height:1.3; }
+.view-search-item:hover, .view-search-item.is-current { color:var(--hover-text); background:var(--hover-surface); text-decoration:none; }
+.view-search-path { font-size:11px; color:var(--muted); }
+.view-search-empty { padding:8px; font-size:13px; color:var(--muted); }
+/* Narrow screens: the logo and theme toggle sit over the first row, so search gets a row of its own. */
+@media(max-width:991px) {
+    .navbar:has(.view-search) { padding-right:0; }
+    .navbar:has(.view-search) .theme-toggle { position:static; order:2; margin-left:auto; top:auto; transform:none; }
+    .view-search { order:3; flex:0 0 100%; margin:12px 0 0; }
+    .navbar:has(.view-search) .navbar-collapse { order:4; }
+    /* Centre the logo on the 40px menu and theme buttons. */
+    .admin-mobile-brand { top:26.5px; }
+    .view-search-input, .view-search-results { width:100%; }
+    .view-search-results { left:0; right:auto; }
+}
+@media(max-width:800px) { .admin-mobile-brand { top:22.5px; } }
