@@ -6,6 +6,7 @@ import mimetypes
 import re
 import time
 import typing as t
+from urllib.parse import unquote
 import warnings
 from collections import OrderedDict
 from math import ceil
@@ -14,6 +15,7 @@ from flask import abort
 from flask import current_app
 from flask import flash
 from flask import get_flashed_messages
+from flask import has_request_context
 from flask import json
 from flask import redirect
 from flask import request
@@ -289,6 +291,18 @@ class BaseModelView(BaseView, ActionsMixin):
     column_details_exclude_list: list[str] | None = None
     """
         Collection of fields excluded from the details view.
+    """
+
+    column_list_selectable: bool = True
+    """
+        Let users add model fields that are not in `column_list` from the
+        list view's Columns menu. Their choice is kept in a cookie per view.
+    """
+
+    column_details_render_html: bool = False
+    """
+        Render details values as trusted HTML instead of escaping them.
+        Only enable this when every displayed value is safe to render.
     """
 
     column_export_list: list[str] | None = None
@@ -1183,6 +1197,13 @@ class BaseModelView(BaseView, ActionsMixin):
         """
         raise NotImplementedError("Please implement scaffold_list_columns method")
 
+    def scaffold_selectable_list_columns(self) -> list[str]:
+        """
+        Model field names a user may add to the list view from the
+        Columns menu. Defaults to `scaffold_list_columns`.
+        """
+        return self.scaffold_list_columns()
+
     def get_column_name(self, field: str) -> str:
         """
         Return a human-readable column name.
@@ -1260,6 +1281,46 @@ class BaseModelView(BaseView, ActionsMixin):
             excluded_columns=self.column_exclude_list,
         )
 
+    @property
+    def list_columns_cookie(self) -> str:
+        return f"fa_columns_{self.endpoint}"
+
+    def get_selectable_list_columns(self) -> list[tuple[T_COLUMN, str]]:
+        """
+        Every column the Columns menu offers: the default list columns
+        first, then other model fields in model order.
+        """
+        if not self.column_list_selectable:
+            return list(self._list_columns)
+        shown = {c for c, _ in self._list_columns}
+        try:
+            names = self.scaffold_selectable_list_columns()
+        except NotImplementedError:
+            names = []
+        extra = self.get_column_names(
+            only_columns=[n for n in names if n not in shown], excluded_columns=None
+        )
+        return list(self._list_columns) + extra
+
+    def _get_request_list_columns(self) -> list[tuple[T_COLUMN, str]]:
+        """
+        The list columns for this request: the defaults plus any extra
+        fields the user picked in the Columns menu.
+        """
+        if not (self.column_list_selectable and has_request_context()):
+            return self._list_columns
+        picked = request.cookies.get(self.list_columns_cookie, "")
+        if not picked:
+            return self._list_columns
+        wanted = set(unquote(picked).split(","))
+        default = {c for c, _ in self._list_columns}
+        extra = [
+            (c, name)
+            for c, name in self.get_selectable_list_columns()
+            if c not in default and c in wanted
+        ]
+        return list(self._list_columns) + extra
+
     def get_details_columns(self) -> list[tuple[T_COLUMN, str]]:
         """
         Uses `get_column_names` to get a list of tuples with the model
@@ -1276,6 +1337,14 @@ class BaseModelView(BaseView, ActionsMixin):
             only_columns=only_columns,
             excluded_columns=self.column_details_exclude_list,
         )
+
+    def get_details_extra_rows(self, model: t.Any) -> list[tuple[str, t.Any]]:
+        """
+        Extra ``(label, value)`` rows appended to the details view.
+        Override to show computed content; values follow
+        `column_details_render_html`.
+        """
+        return []
 
     def get_export_columns(self) -> list[tuple[T_COLUMN, str]]:
         """
@@ -1723,10 +1792,11 @@ class BaseModelView(BaseView, ActionsMixin):
         """
         Return column index by
         """
-        if idx is None or idx < 0 or idx >= len(self._list_columns):
+        columns = self._get_request_list_columns()
+        if idx is None or idx < 0 or idx >= len(columns):
             return None
 
-        return self._list_columns[idx]
+        return columns[idx]
 
     def _get_default_order(self) -> list[tuple[str, bool]] | None:
         """
@@ -2393,7 +2463,8 @@ class BaseModelView(BaseView, ActionsMixin):
             list_forms=list_forms,
             delete_form=delete_form,
             action_form=action_form,  # List
-            list_columns=self._list_columns,
+            list_columns=self._get_request_list_columns(),
+            selectable_columns=self.get_selectable_list_columns(),
             sortable_columns=self._sortable_columns,
             editable_columns=self.column_editable_list,
             list_row_actions=self.get_list_row_actions(),  # Pagination

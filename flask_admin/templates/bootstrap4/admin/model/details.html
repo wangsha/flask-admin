@@ -31,6 +31,7 @@
   {% endblock %}
 
   {% block details_table %}
+    {% macro render_detail(value) %}{{ value|safe if admin_view.column_details_render_html else value }}{% endmacro %}
     <table class="table table-hover table-bordered searchable fa-details-table">
     {% for c, name in details_columns %}
       <tr>
@@ -38,7 +39,17 @@
           <b>{{ name }}</b>
         </td>
         <td class="detail-value-cell" title="{{ _gettext('Double-click to copy value') }}">
-          <div class="detail-value">{{ get_value(model, c) }}</div>
+          <div class="detail-value">{{ render_detail(get_value(model, c)) }}</div>
+        </td>
+      </tr>
+    {% endfor %}
+    {% for name, value in admin_view.get_details_extra_rows(model) %}
+      <tr>
+        <td class="detail-label-cell">
+          <b>{{ name }}</b>
+        </td>
+        <td class="detail-value-cell">
+          <div class="detail-value">{{ render_detail(value) }}</div>
         </td>
       </tr>
     {% endfor %}

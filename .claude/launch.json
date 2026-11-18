@@ -4,7 +4,7 @@
     {
       "name": "graphite-preview",
       "runtimeExecutable": "uv",
-      "runtimeArgs": ["run", "flask", "--app", "/private/tmp/claude-501/-Users-sha-Projects-flask-admin/dd02591e-89d5-4c62-b5ee-06a57ade0795/scratchpad/preview_app.py", "run", "--port", "5077", "--debug"],
+      "runtimeArgs": ["run", "flask", "--app", "/private/tmp/claude-501/-Users-sha-Projects-flask-admin/398fbf00-2cb8-46fb-9344-2f9af10bb5f4/scratchpad/preview_app.py", "run", "--port", "5077", "--debug"],
       "port": 5077
     }
   ]
