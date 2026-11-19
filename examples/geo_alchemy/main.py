@@ -80,14 +80,11 @@ if __name__ == "__main__":
         app.config["SQLALCHEMY_ECHO"] = False
         # Credentials for loading map tiles from Mapbox
         app.config["FLASK_ADMIN_MAPS"] = True
-        app.config["FLASK_ADMIN_MAPS_SEARCH"] = False
         app.config["FLASK_ADMIN_MAPBOX_MAP_ID"] = "light-v10"
         app.config["FLASK_ADMIN_MAPBOX_ACCESS_TOKEN"] = "..."
         # When creating new shapes, use this default map center
         app.config["FLASK_ADMIN_DEFAULT_CENTER_LAT"] = -33.918861
         app.config["FLASK_ADMIN_DEFAULT_CENTER_LONG"] = 18.423300
-        # If you want to use Google Maps, set the API key here
-        app.config["FLASK_ADMIN_GOOGLE_MAPS_API_KEY"] = "..."
         app.add_url_rule(rule="/", view_func=index)
         db.init_app(app)
         admin.init_app(app)

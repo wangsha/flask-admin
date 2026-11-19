@@ -345,13 +345,6 @@ the tile layer URLs and tile attribution attributes::
         tile_layer_url = '{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
         tile_layer_attribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 
-If you want to include a search box on map widgets for looking up locations, you need the following additional configuration::
-
-    app.config['FLASK_ADMIN_MAPS_SEARCH'] = True
-    app.config['FLASK_ADMIN_GOOGLE_MAPS_API_KEY'] = 'secret'
-
-Flask-Admin currently only supports Google Maps for map search.
-
 Limitations
 ***********
 

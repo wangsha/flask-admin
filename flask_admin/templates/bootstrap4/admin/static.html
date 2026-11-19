@@ -18,3 +18,40 @@
     {%- endif -%}
     {{- asset_url -}}
 {%- endmacro %}
+
+{# SHA-384 hashes of the pinned npm distributions and Flask-Admin v2.0.2 assets. #}
+{% set cdn_hashes = {
+    "bootswatch@4.6.2/dist/cerulean/bootstrap.min.css": "sha384-A6oD7OZzwQi+MPEgs+4wApWIQkPgyIjlIRMzJeQuKFp4QpYjNKu77pYv5J8EHSIC",
+    "bootswatch@4.6.2/dist/cosmo/bootstrap.min.css": "sha384-DUe+9kSkbASwMqOWTWv7sf/Vr8GlxCUeiSVP5Fmb5gVh3D+dq+XADoouBXVz8g5f",
+    "bootswatch@4.6.2/dist/cyborg/bootstrap.min.css": "sha384-jDet8GHoJP/WwUz6eAw1OAMcFGJpU7Gk36CckKD6m/drPneZHUvn0tQ3Lz74YemT",
+    "bootswatch@4.6.2/dist/darkly/bootstrap.min.css": "sha384-AlZcjtenZsVAy5f0aLRFbRpPzwz9Lu3yKC+H0P3B6eHnp0FgEAHgPMal9E7I3O1U",
+    "bootswatch@4.6.2/dist/flatly/bootstrap.min.css": "sha384-YVAqsn9zrIMjKmYdRYojxLhIq3G2hInoDKjRpva2+OLSLQLyejdI59SK98PS4f83",
+    "bootswatch@4.6.2/dist/journal/bootstrap.min.css": "sha384-b6ZGhjNWU6khKcyn17wv3IVgcoPGbFm1C2QIUVFVQ47u8JaM5M2l38TAHCX7tEdn",
+    "bootswatch@4.6.2/dist/litera/bootstrap.min.css": "sha384-Vff1jr+S3PtqwSBk00wQia6DQrN0mEh3hU/bV3q8uNyEw2X/+os+BPbGeRoWJ0k0",
+    "bootswatch@4.6.2/dist/lumen/bootstrap.min.css": "sha384-RgGvSo67HBQ2EdJ+Iu4mNk37qUIpIeGoVkiu3gQD5ezIYt2ED78bl6VCqrI9GRS4",
+    "bootswatch@4.6.2/dist/lux/bootstrap.min.css": "sha384-6MVY8MDc/7C0ATgYxU36q1TmooSd8P+Y/Jk5djNzDxdavtjUBXNOBbg7kbf1PyP7",
+    "bootswatch@4.6.2/dist/materia/bootstrap.min.css": "sha384-nzWnEuPsOrKjI0VCMmvYVtpy2PNqgKhuvwH5U3fH042APN0DXJ3QcPOdTiStSlc2",
+    "bootswatch@4.6.2/dist/minty/bootstrap.min.css": "sha384-W9ihdz933xFujHUUbsIx0pBorywx+RIn1bYd9k3rilYPECkt6Snvr6i/jQikH0h2",
+    "bootswatch@4.6.2/dist/pulse/bootstrap.min.css": "sha384-KO8Xl6gYqYEYUMWgvHS6aQqEgLwKte7v8ESO1UrmmYNCTf/lvO7UO1hsuJm0XueA",
+    "bootswatch@4.6.2/dist/sandstone/bootstrap.min.css": "sha384-Eupoe5ruAMD7NxGMjQh2mais+H/sXG7oos1rIYKpJtxGT5b/ww3NcBtMi1pD2rYu",
+    "bootswatch@4.6.2/dist/simplex/bootstrap.min.css": "sha384-JbVDfmrSM3koQRQzQ4z8Hr5rQVdSZZtuVydoY2FLm1r+aCmxHEG7q/mkoRCJEIcw",
+    "bootswatch@4.6.2/dist/sketchy/bootstrap.min.css": "sha384-dMeAJFsqG6YeTRVFFFtc4O2SDN9YCt7Kr1mkEAM9Kmi20rlCl9o13vfR9zqbe9SC",
+    "bootswatch@4.6.2/dist/slate/bootstrap.min.css": "sha384-gG0ideXVvf7q7QYYhxfsNYjmUwQMlC2vnX9JS1umcB7Dcc8NqsZa06YEp+YmOS4Y",
+    "bootswatch@4.6.2/dist/solar/bootstrap.min.css": "sha384-jgfdODdMq8iBUeDZ+VvFhg8+vqX6q5h1xYoKtwACiQV43MBUifBalFtPzGv73w+L",
+    "bootswatch@4.6.2/dist/spacelab/bootstrap.min.css": "sha384-I3E7bUU2qUZjFlXkooEi27V1+MX/81OdpogASkEFkIJ3V0/aTywfjpD4iZN2ig0K",
+    "bootswatch@4.6.2/dist/superhero/bootstrap.min.css": "sha384-QcMw2EG6QHiMec7lzZZo2ihRRdQyqxljmCkFdR3xpY0OLOLWsFOuWt2D+zO8j18H",
+    "bootswatch@4.6.2/dist/united/bootstrap.min.css": "sha384-RilNYOzhqzC2bdWXyk1593YODwRPsJmGBDMSCHHxd5Pr+iS/470c70DsaD7eZ+fo",
+    "bootswatch@4.6.2/dist/yeti/bootstrap.min.css": "sha384-eWJo0orqZpSMcVq8+eb117A0P461p17kwsTXJ2d+rXx+NNqZQ7shdoqxkJGBOFdG",
+    "vendor/leaflet/leaflet.css": "sha384-BF7C732iE6WuqJMhUnTNJJLVvW1TIP87P2nMDY7aN2j2EJFWIaqK89j3WlirhFZU",
+    "vendor/leaflet/leaflet.draw.css": "sha384-NZLkVuBRMEeB4VeZz27WwTRvlhec30biQ8Xx7zG7JJnkvEKRg5qi6BNbEXo9ydwv",
+    "vendor/leaflet/leaflet.draw.js": "sha384-3fO9eF/DdAUekXTMAf8iDpFKBOrGB6AnD5qMp97DJBMLUapgXvRtQm0Rr74n6yeF",
+    "vendor/leaflet/leaflet.js": "sha384-W5D2UnNtqmIifelXA+YIC7Zc0B7lnrhN39br4Q7hdiehgy+QgleoHQR0bYVNoIqk",
+    "vendor/x-editable/css/bootstrap4-editable.css": "sha384-+OTj9TOhxmkZ67nIWe/pAbmGLWWHSSw8NfkhbxInc73TwMZyweZCw+4qqRWSLVGS",
+    "vendor/x-editable/js/bootstrap4-editable.min.js": "sha384-uqhBvJgsssMSNxJllL6rZL8hOYEKSzW2/m2VHjz4Voc/SjGPgxlubrAN5KeYbjOW",
+} %}
+
+{% macro cdn_integrity(asset) -%}
+    {# Unknown paths fail closed if the CDN ever responds with a file. #}
+    {%- set digest = cdn_hashes.get(asset, "sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N") -%}
+    integrity="{{ digest }}" crossorigin="anonymous"
+{%- endmacro %}

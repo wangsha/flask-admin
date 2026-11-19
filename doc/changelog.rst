@@ -4,6 +4,12 @@ Changelog
 [unreleased]
 ------------------
 
+Changes:
+
+* Removed Google Places autocomplete from geographic form widgets. The Leaflet map and geometry editor are still available. Applications can remove the ``FLASK_ADMIN_MAPS_SEARCH`` and ``FLASK_ADMIN_GOOGLE_MAPS_API_KEY`` settings.
+
+* Removed the Font Awesome stylesheet and font dependency. Menu icons using legacy ``fa`` names use local drawings for supported names and a generic icon for other names. Use the ``image`` icon type for a custom local icon.
+
 Bugfixes:
 
 * Peewee backend: return None from ajax get_one() when no record matches rather than raising DoesNotExist

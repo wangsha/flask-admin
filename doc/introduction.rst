@@ -569,12 +569,6 @@ Geographical Map views          To enable use of maps:
 
                                 ``FLASK_ADMIN_MAPBOX_ACCESS_TOKEN``
 
-                                And can use with Google Search with:
-
-                                ``FLASK_ADMIN_MAPS_SEARCH``
-
-                                ``FLASK_ADMIN_GOOGLE_MAPS_API_KEY``
-
                                 see more :ref:`display-map-widgets`
 
 Exception handling               To show exceptions on the output rather than

@@ -234,7 +234,7 @@ class BaseView(BaseViewClass, metaclass=AdminViewMeta):
             Optional icon. Possible icon types:
 
              - `flask_admin.consts.ICON_TYPE_GLYPH` - Bootstrap glyph icon
-             - `flask_admin.consts.ICON_TYPE_FONT_AWESOME` - Font Awesome icon
+             - `flask_admin.consts.ICON_TYPE_FONT_AWESOME` - local icon selected by a legacy Font Awesome name
              - `flask_admin.consts.ICON_TYPE_IMAGE` - Image relative to Flask static
                 directory
              - `flask_admin.consts.ICON_TYPE_IMAGE_URL` - Image with full URL
